@@ -1,0 +1,251 @@
+﻿{
+  "generated_at": "2026-04-18T06:05:08.8124536+05:30",
+  "last_updated": "2026-04-18T06:37:00+05:30",
+  "project": {
+    "name": "Fabric Material Classifier",
+    "aim": "Train and ship an EfficientNet-B0 based 14-class material classifier integrated with backend/wardrobe_analytics.py.",
+    "required_backbone": "torchvision EfficientNet-B0",
+    "required_head": "Dropout(0.3) -> Linear(1280->256) -> ReLU -> Dropout(0.2) -> Linear(256->14)",
+    "required_output_paths": {
+      "best_weights": "backend/fabric_classifier/weights/fabric_clf_best.pt",
+      "last_checkpoint": "backend/fabric_classifier/weights/fabric_clf_last.pt",
+      "temperature": "backend/fabric_classifier/calibration/temperature.json"
+    },
+    "done_criteria": {
+      "top1_accuracy_min": 0.72,
+      "top3_accuracy_min": 0.90,
+      "macro_f1_min": 0.68,
+      "worst_class_recall_min": 0.40,
+      "inference_time_ms_max": 40.0,
+      "inference_vram_mb_max": 300.0
+    }
+  },
+  "hardware_constraints": {
+    "gpu": "RTX 3050 6GB",
+    "gpu_vram_budget_mb": 300,
+    "ram_total_gb": 8,
+    "ram_hard_limit_percent": 75.0,
+    "cpu": "i5-13420H",
+    "always_use_fp16_on_gpu": true,
+    "max_dataloader_workers": 4,
+    "max_batch_size": 32
+  },
+  "required_operation_constraints": [
+    "Never run downloads and training at the same time.",
+    "Do not stop any running processes unless explicitly requested.",
+    "Use existing conda environment myenv; do not create a new environment.",
+    "Use command style: conda activate myenv; python -u backend/fabric_classifier/training/train.py",
+    "Do not use conda run for training launch."
+  ],
+  "current_runtime_state": {
+    "active_training_process": {
+      "pid": 6176,
+      "process_name": "python.exe",
+      "command_line": "\"C:\\Users\\A0SKZ\\miniconda3\\envs\\myenv\\python.exe\" -u backend/fabric_classifier/training/train.py",
+      "working_set_bytes": 682360832,
+      "start_time": "2026-04-18 06:33:xx local"
+    },
+    "runtime_flags": {
+      "training_active_flag": {
+        "path": "backend/fabric_classifier/training/runtime_control/training_active.flag",
+        "content": {
+          "timestamp": "2026-04-18T00:27:54.488658+00:00",
+          "reason": "attempt_3_start",
+          "pid": 1980
+        }
+      },
+      "downloads_paused_flag": {
+        "path": "backend/fabric_classifier/training/runtime_control/downloads_paused.flag",
+        "content": {
+          "timestamp": "2026-04-18T00:27:57.053194+00:00",
+          "reason": "attempt_3_epoch_1_start"
+        }
+      }
+    },
+    "observed_terminal_state": [
+      "Attempt #3 relaunched with patched low-RAM params (batch=8, workers=0, pin_memory=false, RAM hard limit=75).",
+      "Data loaded and split: 7163 train, 1535 validation, 1536 test.",
+      "No resumable checkpoint found for current attempt in training_log.json.",
+      "Epoch 1 started; training progress observed in terminal."
+    ],
+    "weights_directory_state": {
+      "path": "backend/fabric_classifier/weights",
+      "pt_files_present": false,
+      "notes": "No .pt files detected at latest check."
+    },
+    "resource_manager_state": {
+      "log_path": "backend/fabric_classifier/training/resource_manager.log",
+      "latest_seen_patterns": [
+        "Repeated ram>=75_pause_downloads",
+        "forced_download_pause applied",
+        "Earlier sessions frequently hit ram>=82 and ram>=90 training critical",
+        "Download pausing behavior is active"
+      ]
+    },
+    "latest_observation": {
+      "timestamp": "2026-04-18T06:37:00+05:30",
+      "system_ram_used_percent": 93.65,
+      "system_ram_free_mb": 507.0,
+      "interpretation": "Attempt 3 entered epoch 1 despite high RAM after timeout-based gate handling."
+    },
+    "recent_process_checks": [
+      "One check reported process missing due process turnover between relaunches.",
+      "Latest confirmed active training process is PID 6176."
+    ]
+  },
+  "attempt_history": [
+    {
+      "attempt": 1,
+      "status": "Blocked",
+      "targets_met": false,
+      "reason": "Conda activation/terminal setup issue in earlier session"
+    },
+    {
+      "attempt": 2,
+      "status": "completed",
+      "targets_met": false,
+      "final_metrics": {
+        "top1_accuracy": 0.5652522017614091,
+        "top3_accuracy": 0.7990392446517944,
+        "macro_f1": 0.5479806631763168,
+        "worst_class_recall": 0.25,
+        "inference_time_ms": 55.20995200029574,
+        "vram_mb": 139.86962890625
+      },
+      "target_gaps": {
+        "top1_gap": -0.1547477982385909,
+        "top3_gap": -0.1009607553482056,
+        "macro_f1_gap": -0.1320193368236832,
+        "worst_recall_gap": -0.15,
+        "inference_time_gap_ms": 15.20995200029574,
+        "vram_gap_mb": -160.13037109375
+      }
+    },
+    {
+      "attempt": 3,
+      "status": "running",
+      "targets_met": null,
+      "notes": "Active process PID 1980. Entered epoch gate with downloads paused and RAM limit enforcement."
+    }
+  ],
+  "mistakes_and_failures_observed": [
+    {
+      "issue": "Direct script launch import failure",
+      "symptom": "ImportError: attempted relative import with no known parent package",
+      "impact": "Training command failed when run as python -u path/to/train.py",
+      "status": "fixed"
+    },
+    {
+      "issue": "Windows file lock during download temp file replacement",
+      "symptom": "PermissionError while replacing temp download files",
+      "impact": "Downloader instability and retries/failures",
+      "status": "fixed"
+    },
+    {
+      "issue": "Corrupt image contamination",
+      "symptom": "Corrupted image warnings and load failures",
+      "impact": "Training noise and possible crash/instability",
+      "status": "partially mitigated"
+    },
+    {
+      "issue": "Earlier mixed precision/runtime mismatches",
+      "symptom": "Tensor dtype mismatch and instability in prior iterations",
+      "impact": "Training interruptions",
+      "status": "fixed"
+    },
+    {
+      "issue": "Attempt history under target",
+      "symptom": "Attempt 2 failed all accuracy/F1/latency targets except VRAM",
+      "impact": "Requires additional attempts and tuning",
+      "status": "open"
+    }
+  ],
+  "bugs_fixed_and_hardening_applied": [
+    {
+      "file": "backend/fabric_classifier/training/train.py",
+      "changes": [
+        "Added import fallback for direct script execution via python -u.",
+        "Embedded strict low-RAM defaults (batch=8, workers=2).",
+        "Added per-epoch gates: pause downloads, wait for no download processes, wait for RAM < 75.",
+        "Added checkpoint save path backend/fabric_classifier/weights/fabric_clf_last.pt and resume lookup.",
+        "Added final cleanup in finally block for runtime flags.",
+        "Updated low-RAM loader mode to workers=0 and pin_memory=false.",
+        "Made RAM gate timeout-aware and shortened pre-epoch gate waits (download wait 30s, RAM wait 120s)."
+      ]
+    }, {
+      "file": "backend/fabric_classifier/training/resource_manager.py",
+      "changes": [
+        "Added DynamicResourceManager with periodic telemetry.",
+        "Added decision logging and runtime control flags.",
+        "Added APIs to pause downloads, close download processes, and enforce RAM thresholds.",
+        "Changed wait_until_ram_below_limit to return success/failure with optional timeout.",
+        "Aligned fixed dataloader workers to 0 for low-RAM policy."
+      ]
+    },
+    {
+      "file": "backend/fabric_classifier/training/download_fibre_subset.py",
+      "changes": [
+        "Added robust retry/backoff and DNS retry handling.",
+        "Added safer temp file replacement and unlink retry logic for Windows.",
+        "Added integrity checks and dynamic worker control tied to resource manager.",
+        "Constrained worker defaults for low-RAM operation."
+      ]
+    {
+      "attempt": 3,
+      "status": "running",
+      "targets_met": null,
+      "notes": "Active process PID 6176. Epoch 1 training batches are now progressing after timeout-safe gate handling."
+    }
+      ]
+    },
+     {
+      "file": "backend/fabric_classifier/training/scan_dataset.py",
+      "changes": [
+        "Integrated resource manager scaling for scanner workers."
+      ]
+    },
+    {
+      "file": "backend/fabric_classifier/classes.py",
+      "changes": [
+        "Removed high-noise mappings: elastane_spandex, polyolefin, ramie, hemp."
+      ]
+    }
+  ],
+  "open_risks_and_blockers": [
+    "RAM hard limit may keep training at epoch gate if system memory remains above 75% for long periods.",
+    "No current checkpoint file in weights directory; interruption before first checkpoint loses attempt progress.",
+    "Dataset class imbalance remains for Wool, Corduroy, and Suede due limited available images.",
+    "Training targets still unmet based on last completed attempt."
+  ],
+  "resume_and_recovery_runbook": {
+    "if_process_alive": [
+      "Do not kill PID 1980.",
+      "Monitor terminal output for epoch progress and checkpoint creation.",
+      "Watch backend/fabric_classifier/weights for fabric_clf_last.pt and fabric_clf_best.pt."
+    ],
+    "if_process_stops": [
+      "Run: conda activate myenv; python -u backend/fabric_classifier/training/train.py",
+      "Confirm runtime flags are recreated in backend/fabric_classifier/training/runtime_control.",
+      "Confirm resume logic picks backend/fabric_classifier/weights/fabric_clf_last.pt if present.",
+      "Continue attempts until all done criteria are met."
+    ],
+    "validation_commands_reference": [
+      "Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'python' -and $_.CommandLine -match 'backend/fabric_classifier/training/train.py' }",
+      "Get-ChildItem backend/fabric_classifier/weights -Filter *.pt",
+      "Get-Content backend/fabric_classifier/training/resource_manager.log -Tail 50",
+      "Get-Content backend/fabric_classifier/training/training_log.json -Raw"
+    ]
+  },
+  "project_status_summary": {
+    "overall": "in_progress",
+    "integration_contract_status": "not yet re-verified in this run",
+    "calibration_status": "pending until targets met",
+    "next_required_milestones": [
+      "First checkpoint creation for attempt 3",
+      "Completed attempt with evaluated test metrics",
+      "Targets met and calibration saved",
+      "Final integration verification of FabricClassifier.predict output shape"
+    ]
+  }
+}
+

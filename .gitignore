@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Datasets and large raw data
+DATASETS/
+
+# Temporary and duplicate backup directories
+backend/fabric_classifier_backup/
+backend/fabric_classifier_backup_pre_imaterialist/
+backend/fabric_classifier/training/backend/
+
+# Lock files and process control
+runtime_control/*.lock
+*.lock
+
+# Temporary and log files
+backend/fabric_classifier/training/resource_manager.log
+
+# System files
+.DS_Store
+Thumbs.db

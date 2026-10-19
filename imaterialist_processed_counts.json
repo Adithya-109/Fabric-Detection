@@ -1,0 +1,23 @@
+{
+  "splits": {
+    "train": 189244,
+    "val": 13608,
+    "test": 13429
+  },
+  "classes": {
+    "Wool": 9064,
+    "Velvet": 4167,
+    "Satin": 4696,
+    "Cotton": 76236,
+    "Fleece": 11756,
+    "Leather": 9616,
+    "Linen": 2064,
+    "Nylon": 6867,
+    "Denim": 24998,
+    "Knitted": 18165,
+    "Suede": 1122,
+    "Corduroy": 517,
+    "Silk": 6239,
+    "Polyester": 40774
+  }
+}

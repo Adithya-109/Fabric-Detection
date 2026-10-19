@@ -1,0 +1,695 @@
+{
+  "root": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main",
+  "workers": 6,
+  "started_at": "2026-04-17T11:42:23.630746+00:00",
+  "updated_at": "2026-04-17T13:21:04.973012+00:00",
+  "results": {
+    "None/canvas": {
+      "total": 125,
+      "valid": 63,
+      "corrupt": 62,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\393288_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\393288_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\412525_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\412525_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\423506_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\423506_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\452622_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\452622_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\458025_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\458025_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\467748_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\467748_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\479687_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\479687_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\504663_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\504663_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\508010_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\508010_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\canvas\\527371_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\canvas\\\\527371_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/chiffon": {
+      "total": 4358,
+      "valid": 2359,
+      "corrupt": 1999,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\116758_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\116758_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\117998_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\117998_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\118247_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\118247_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\11860_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\11860_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\118651_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\118651_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\118715_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\118715_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\121633_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\121633_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\12181_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\12181_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\121831_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\121831_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\chiffon\\122821_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\chiffon\\\\122821_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/corduroy": {
+      "total": 128,
+      "valid": 87,
+      "corrupt": 41,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\125273_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\125273_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\14258_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\14258_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\183149_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\183149_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\209424_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\209424_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\256832_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\256832_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\27699_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\27699_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\315527_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\315527_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\320357_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\320357_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\325073_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\325073_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\corduroy\\32679_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\corduroy\\\\32679_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/knit": {
+      "total": 3537,
+      "valid": 2154,
+      "corrupt": 1383,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\1010912_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\1010912_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\1011406_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\1011406_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\101892_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\101892_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\103281_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\103281_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\1000212_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\1000212_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\1000774_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\1000774_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\100272_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\100272_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\1006097_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\1006097_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\100627_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\100627_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\knit\\1006292_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\knit\\\\1006292_l1_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/lace": {
+      "total": 6286,
+      "valid": 3811,
+      "corrupt": 2475,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\1014282_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\1014282_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\1014500_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\1014500_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\1014542_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\1014542_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\101949_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\101949_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\10330_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\10330_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\103552_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\103552_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\104055_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\104055_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\104272_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\104272_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\104316_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\104316_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\lace\\104689_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\lace\\\\104689_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/neoprene": {
+      "total": 130,
+      "valid": 89,
+      "corrupt": 41,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\119121_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\119121_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\133941_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\133941_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\134518_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\134518_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\143285_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\143285_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\205775_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\205775_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\209053_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\209053_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\238074_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\238074_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\248520_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\248520_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\266484_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\266484_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\neoprene\\27333_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\neoprene\\\\27333_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/tulle": {
+      "total": 434,
+      "valid": 217,
+      "corrupt": 217,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\303404_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\303404_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\309124_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\309124_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\310521_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\310521_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\313129_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\313129_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\336825_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\336825_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\342824_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\342824_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\358457_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\358457_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\359347_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\359347_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\366034_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\366034_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tulle\\378270_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tulle\\\\378270_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/tweed": {
+      "total": 18,
+      "valid": 8,
+      "corrupt": 10,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\511028_l1_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\511028_l1_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\547570_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\547570_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\662035_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\662035_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\716161_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\716161_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\763382_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\763382_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\802946_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\802946_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\815222_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\815222_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\869332_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\869332_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\92432_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\92432_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\tweed\\998990_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\tweed\\\\998990_imaterial.jpeg'"
+        }
+      ]
+    },
+    "None/velvet": {
+      "total": 737,
+      "valid": 470,
+      "corrupt": 267,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\1005874_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\1005874_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\1006316_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\1006316_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\1007033_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\1007033_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\1007072_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\1007072_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\1007385_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\1007385_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\1008680_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\1008680_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\1013121_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\1013121_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\106477_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\106477_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\111801_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\111801_imaterial.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\None\\test\\velvet\\113468_imaterial.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\None\\\\test\\\\velvet\\\\113468_imaterial.jpeg'"
+        }
+      ]
+    },
+    "fabric/canvas": {
+      "total": 321,
+      "valid": 321,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/chambray": {
+      "total": 18,
+      "valid": 18,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/chiffon": {
+      "total": 15731,
+      "valid": 15731,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/corduroy": {
+      "total": 445,
+      "valid": 445,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/denim": {
+      "total": 16927,
+      "valid": 16927,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/faux_fur": {
+      "total": 2422,
+      "valid": 2422,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/faux_leather": {
+      "total": 1,
+      "valid": 1,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/flannel": {
+      "total": 338,
+      "valid": 338,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/fleece": {
+      "total": 3941,
+      "valid": 3941,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/gingham": {
+      "total": 46,
+      "valid": 44,
+      "corrupt": 2,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fabric\\test\\gingham\\image.webp",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fabric\\\\test\\\\gingham\\\\image.webp'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fabric\\train\\gingham\\16020571335c4d82e21cecdaff3d93125759b3689a_thumbnail_220x293.webp",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fabric\\\\train\\\\gingham\\\\16020571335c4d82e21cecdaff3d93125759b3689a_thumbnail_220x293.webp'"
+        }
+      ]
+    },
+    "fabric/knit": {
+      "total": 10488,
+      "valid": 10487,
+      "corrupt": 1,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fabric\\test\\knit\\1593503149613050cb9ed882a9b45626ea17043092_thumbnail_220x293.webp",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fabric\\\\test\\\\knit\\\\1593503149613050cb9ed882a9b45626ea17043092_thumbnail_220x293.webp'"
+        }
+      ]
+    },
+    "fabric/lace": {
+      "total": 22381,
+      "valid": 22381,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/lawn": {
+      "total": 1,
+      "valid": 0,
+      "corrupt": 1,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fabric\\train\\lawn\\5de8f2bb6a9b265409a92286bfecbe3eb9ca963281444.jpg.webp",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fabric\\\\train\\\\lawn\\\\5de8f2bb6a9b265409a92286bfecbe3eb9ca963281444.jpg.webp'"
+        }
+      ]
+    },
+    "fabric/neoprene": {
+      "total": 471,
+      "valid": 471,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/organza": {
+      "total": 681,
+      "valid": 681,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/plush": {
+      "total": 219,
+      "valid": 219,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/satin": {
+      "total": 2167,
+      "valid": 2167,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/serge": {
+      "total": 1,
+      "valid": 0,
+      "corrupt": 1,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fabric\\train\\serge\\mi-5002or-men-s-stretch-sweatshirt-full-comfort-vonby.webp",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fabric\\\\train\\\\serge\\\\mi-5002or-men-s-stretch-sweatshirt-full-comfort-vonby.webp'"
+        }
+      ]
+    },
+    "fabric/taffeta": {
+      "total": 42,
+      "valid": 42,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/tulle": {
+      "total": 2544,
+      "valid": 2544,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/tweed": {
+      "total": 55,
+      "valid": 55,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/twill": {
+      "total": 358,
+      "valid": 358,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/velvet": {
+      "total": 2284,
+      "valid": 2284,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fabric/vinyl": {
+      "total": 169,
+      "valid": 169,
+      "corrupt": 0,
+      "corrupt_samples": []
+    },
+    "fibre/flax_linen": {
+      "total": 274,
+      "valid": 273,
+      "corrupt": 1,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\flax_linen\\belgian_flax_linen_bed_skirt_with_tailored_pleats_2__14431.1557197138.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\flax_linen\\\\belgian_flax_linen_bed_skirt_with_tailored_pleats_2__14431.1557197138.jpg'"
+        }
+      ]
+    },
+    "fibre/polyester": {
+      "total": 209,
+      "valid": 202,
+      "corrupt": 7,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\test\\polyester\\99697303.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\test\\\\polyester\\\\99697303.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\polyester\\8650-04-front-4-pocket-polyester-pants.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\polyester\\\\8650-04-front-4-pocket-polyester-pants.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\polyester\\a7136dfb-96b7-4fb0-96c9-2cf7f00c82ca.5771ae73c25ad5564d84e421060ce401.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\polyester\\\\a7136dfb-96b7-4fb0-96c9-2cf7f00c82ca.5771ae73c25ad5564d84e421060ce401.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\polyester\\b0940dc0a70be8753d6d89e820927b0e.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\polyester\\\\b0940dc0a70be8753d6d89e820927b0e.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\polyester\\lautre-chose-brown-b1540524031marrone-polyester-rock.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\polyester\\\\lautre-chose-brown-b1540524031marrone-polyester-rock.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\polyester\\marks-amd-spencers-per-una-red-animal-print-tshirt-size-2027-01.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\polyester\\\\marks-amd-spencers-per-una-red-animal-print-tshirt-size-2027-01.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\polyester\\polyester-bubble-crepe-dress-fabric-brightly-coloured-flowers-on-black-7752-p.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\polyester\\\\polyester-bubble-crepe-dress-fabric-brightly-coloured-flowers-on-black-7752-p.jpg'"
+        }
+      ]
+    },
+    "fibre/suede": {
+      "total": 172,
+      "valid": 66,
+      "corrupt": 106,
+      "corrupt_samples": [
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\4df41e838da4927b1e26254f7c8db74a.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\4df41e838da4927b1e26254f7c8db74a.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\4fd854a59791f46d0a156d16de996228_300x.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\4fd854a59791f46d0a156d16de996228_300x.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\51shln93v3l._ac_uy445_.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\51shln93v3l._ac_uy445_.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\54323.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\54323.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\63d1e2a07a54dcb14a3c03570c7d177b.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\63d1e2a07a54dcb14a3c03570c7d177b.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\67f414cec02fa03360f30c23b47fa222--autumn-winter-fashion-autumn-style.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\67f414cec02fa03360f30c23b47fa222--autumn-winter-fashion-autumn-style.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\680568-main.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\680568-main.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\6af838f2-3d2f-4237-b36c-5180be028bb1.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\6af838f2-3d2f-4237-b36c-5180be028bb1.jpeg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\7814667~blue_3.jpg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\7814667~blue_3.jpg'"
+        },
+        {
+          "path": "C:\\Users\\A0SKZ\\STORE\\ALL_CODE\\BUISINESS\\Clothes_Machine_Learning\\DATASETS\\TextileNet-main\\fibre\\train\\suede\\7e46460b-02ba-4fb7-8b56-ffc85bb051f2.jpeg",
+          "error": "cannot identify image file 'C:\\\\Users\\\\A0SKZ\\\\STORE\\\\ALL_CODE\\\\BUISINESS\\\\Clothes_Machine_Learning\\\\DATASETS\\\\TextileNet-main\\\\fibre\\\\train\\\\suede\\\\7e46460b-02ba-4fb7-8b56-ffc85bb051f2.jpeg'"
+        }
+      ]
+    }
+  },
+  "last_completed_class": "fibre/suede",
+  "completed": true,
+  "class_count": 36
+}

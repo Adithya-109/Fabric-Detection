@@ -1,0 +1,245 @@
+{
+  "generated_at": "2026-04-18T06:05:08.8124536+05:30",
+  "last_updated": "2026-04-18T08:46:00+05:30",
+  "project": {
+    "name": "Fabric Material Classifier",
+    "aim": "Train and ship an EfficientNet-B0 based 14-class material classifier integrated with backend/wardrobe_analytics.py.",
+    "required_backbone": "torchvision EfficientNet-B0",
+    "required_head": "Dropout(0.3) -> Linear(1280->256) -> ReLU -> Dropout(0.2) -> Linear(256->14)",
+    "required_output_paths": {
+      "best_weights": "backend/fabric_classifier/weights/fabric_clf_best.pt",
+      "last_checkpoint": "backend/fabric_classifier/weights/fabric_clf_last.pt",
+      "temperature": "backend/fabric_classifier/calibration/temperature.json"
+    },
+    "done_criteria": {
+      "top1_accuracy_min": 0.72,
+      "top3_accuracy_min": 0.9,
+      "macro_f1_min": 0.68,
+      "worst_class_recall_min": 0.4,
+      "inference_time_ms_max": 40.0,
+      "inference_vram_mb_max": 300.0
+    }
+  },
+  "hardware_constraints": {
+    "gpu": "RTX 3050 6GB",
+    "gpu_vram_budget_mb": 300,
+    "ram_total_gb": 8,
+    "ram_hard_limit_percent": 77.0,
+    "cpu": "i5-13420H",
+    "always_use_fp16_on_gpu": true,
+    "max_dataloader_workers": 4,
+    "max_batch_size": 32
+  },
+  "required_operation_constraints": [
+    "Never run downloads and training at the same time.",
+    "Do not stop any running processes unless explicitly requested.",
+    "Use existing conda environment myenv; do not create a new environment.",
+    "Use command style: conda activate myenv; python -u backend/fabric_classifier/training/train.py",
+    "Do not use conda run for training launch."
+  ],
+  "current_runtime_state": {
+    "active_training_process": {
+      "pid": 17752,
+      "process_name": "python.exe",
+      "command_line": "\"C:\\Users\\A0SKZ\\miniconda3\\envs\\myenv\\python.exe\" -u backend/fabric_classifier/training/train.py",
+      "start_time": "2026-04-18 07:22:40 local"
+    },
+    "runtime_flags": {
+      "training_active_flag": {
+        "path": "backend/fabric_classifier/training/runtime_control/training_active.flag",
+        "content": {
+          "timestamp": "2026-04-18T01:52:45.911168+00:00",
+          "reason": "attempt_3_start",
+          "pid": 17752
+        }
+      },
+      "downloads_paused_flag": {
+        "path": "backend/fabric_classifier/training/runtime_control/downloads_paused.flag",
+        "content": {
+          "timestamp": "2026-04-18T03:13:26.288017+00:00",
+          "reason": "attempt_3_epoch_28_start"
+        }
+      }
+    },
+    "observed_terminal_state": [
+      "Attempt #3 relaunched under low-memory settings (batch=4, workers=0, pin_memory=false, grad_accum_steps=2).",
+      "Data loaded and split: 7163 train, 1535 validation, 1536 test.",
+      "Resumed from backend/fabric_classifier/weights/fabric_clf_last.pt at epoch 1.",
+      "Epoch 2 completed: train_loss=2.4998, val_loss=2.1739, val_top1=0.3609, val_macro_f1=0.3493.",
+      "Epoch 3 completed: train_loss=2.4731, val_loss=2.1250, val_top1=0.3544, val_macro_f1=0.3273.",
+      "Epoch 4 completed: train_loss=2.4272, val_loss=2.0883, val_top1=0.3537, val_macro_f1=0.3382.",
+      "Epoch 5 completed: train_loss=2.3762, val_loss=2.0251, val_top1=0.4020, val_top3=0.6612, val_macro_f1=0.3865, worst_recall=0.1750.",
+      "Epoch 6 completed: train_loss=2.3023, val_loss=2.0924, val_top1=0.4248, val_top3=0.6678, val_macro_f1=0.4065, worst_recall=0.1583.",
+      "Epoch 7 completed: val_top1 around 0.4241, val_macro_f1 around 0.4132.",
+      "Epoch 8 completed: val_top1 around 0.4417, val_macro_f1 around 0.4179.",
+      "Epoch 9 completed: val_top1 around 0.4195, val_macro_f1 around 0.4099.",
+      "Epoch 10 completed: val_top1 around 0.4339, val_top3 around 0.6984, val_macro_f1 around 0.4211 (best so far).",
+      "Epoch 11 completed: val_top1 around 0.4228, val_top3 around 0.6886, val_macro_f1 around 0.4052.",
+      "Epoch 12 completed: val_top1 around 0.4397, val_macro_f1 around 0.4326.",
+      "Epoch 13 completed: val_top1 around 0.4554, val_macro_f1 around 0.4406.",
+      "Epoch 14 completed: val_top1 around 0.4638, val_top3 around 0.7055, val_macro_f1 around 0.4504.",
+      "Epoch 15 completed: val_top1 around 0.4658, val_macro_f1 around 0.4560.",
+      "Epoch 16 completed: val_top1 around 0.4723, val_top3 around 0.7173, val_macro_f1 around 0.4607, worst_recall around 0.2583.",
+      "Epoch 17 completed: val_top1 around 0.4560 to 0.4704, val_macro_f1 around 0.4475 to 0.4574.",
+      "Epoch 18 completed: val_top1 around 0.4814, val_top3 around 0.7283, val_macro_f1 around 0.4750, worst_recall around 0.2131.",
+      "Epoch 19 completed: val_top1 around 0.5029, val_top3 around 0.7427, val_macro_f1 around 0.4926, worst_recall around 0.2623.",
+      "Epoch 20 completed in one process stream with no best-model improvement (contention observed between two active writers).",
+      "One process stream previously reported epoch 21 val_macro_f1 around 0.4951, but later checkpoint writes from the concurrent stream overwrote this history.",
+      "Epoch 22 completed in one stream: val_top1 around 0.4762, val_top3 around 0.7212, val_macro_f1 around 0.4656, worst_recall around 0.1967.",
+      "Epoch 23 completed with stream oscillation between writers; saved checkpoint best_val has varied between about 0.4813 and 0.4951 across re-reads.",
+      "Epoch 24 completed in latest saved checkpoint: val_top1 around 0.4945, val_top3 around 0.7453, val_macro_f1 around 0.4847, worst_recall around 0.2787.",
+      "Epoch 25 completed in latest saved checkpoint: val_top1 around 0.4925, val_top3 around 0.7388, val_macro_f1 around 0.4793, worst_recall around 0.1667.",
+      "Epoch 26 completed in one stream with contention-related overwrite variability.",
+      "Epoch 27 completed in latest saved checkpoint: val_top1 around 0.5166, val_top3 around 0.7674, val_macro_f1 around 0.5126, worst_recall around 0.3167 (new saved best).",
+      "Runtime flag now indicates epoch 28 has started."
+    ],
+    "weights_directory_state": {
+      "path": "backend/fabric_classifier/weights",
+      "files": {
+        "fabric_clf_best.pt": {
+          "last_write_local": "2026-04-18 08:43:26",
+          "bytes": 17658382
+        },
+        "fabric_clf_last.pt": {
+          "last_write_local": "2026-04-18 08:43:26",
+          "bytes": 52560435
+        }
+      },
+      "notes": "Latest completed checkpoint payload now reports epoch=27, history_len=27, best_val_score=0.5125990027958711, epochs_no_improve=0; duplicate writers still cause stream oscillation risk."
+    },
+    "resource_manager_state": {
+      "log_path": "backend/fabric_classifier/training/resource_manager.log",
+      "latest_seen_patterns": [
+        "ram>=75_pause_downloads",
+        "forced_download_pause",
+        "intermittent ram>=90_training_critical",
+        "dataloader_workers constrained to 0 in active low-memory path"
+      ]
+    },
+    "latest_observation": {
+      "timestamp": "2026-04-18T08:46:00+05:30",
+      "checkpoint_epoch": 27,
+      "best_val_macro_f1": 0.5125990027958711,
+      "interpretation": "Training is live through epoch 27 with improvement but metrics still below required target thresholds; concurrent writers continue to risk checkpoint-history oscillation."
+    },
+    "recent_process_checks": [
+      "Concurrent processes observed for train.py: PID 4464 and PID 17752.",
+      "Runtime control flags currently owned by PID 17752.",
+      "Checkpoint metadata re-read confirms epoch 27 is currently saved with best validation macro-F1 0.5126."
+    ]
+  },
+  "attempt_history": [
+    {
+      "attempt": 1,
+      "status": "blocked",
+      "targets_met": false,
+      "reason": "Conda activation and session bootstrapping issues in earlier run"
+    },
+    {
+      "attempt": 2,
+      "status": "completed",
+      "targets_met": false,
+      "final_metrics": {
+        "top1_accuracy": 0.5652522017614091,
+        "top3_accuracy": 0.7990392446517944,
+        "macro_f1": 0.5479806631763168,
+        "worst_class_recall": 0.25,
+        "inference_time_ms": 55.20995200029574,
+        "vram_mb": 139.86962890625
+      }
+    },
+    {
+      "attempt": 3,
+      "status": "running",
+      "targets_met": null,
+      "notes": "Active run has completed epoch 27; currently saved best validation macro-F1 is 0.5126 with concurrent-writer contention still present; targets remain unmet."
+    }
+  ],
+  "mistakes_and_failures_observed": [
+    {
+      "issue": "Direct script launch import failure in early run",
+      "symptom": "ImportError: attempted relative import with no known parent package",
+      "impact": "Training command failed when run as python -u path/to/train.py",
+      "status": "fixed"
+    },
+    {
+      "issue": "RAM gate stalls under persistent high system memory",
+      "symptom": "Repeated waiting at pre-epoch resource gate",
+      "impact": "Training throughput reduced and restarts more likely",
+      "status": "partially mitigated"
+    },
+    {
+      "issue": "Validation performance still significantly below targets",
+      "symptom": "Best val top1 and macro-F1 currently much lower than required",
+      "impact": "Further tuning and retries remain necessary",
+      "status": "open"
+    }
+  ],
+  "bugs_fixed_and_hardening_applied": [
+    {
+      "file": "backend/fabric_classifier/training/train.py",
+      "changes": [
+        "Added import fallback for direct script execution via python -u.",
+        "Enforced low-RAM runtime defaults in active path: batch=4, workers=0, pin_memory=false, grad_accum_steps=2.",
+        "Raised training RAM gate threshold from 75% to 77% for future process starts.",
+        "Added timeout-aware RAM/download gating to avoid indefinite stalls.",
+        "Added OOM-safe step handling and gradient accumulation.",
+        "Added persistent per-epoch progress JSONL logging for restart-safe monitoring.",
+        "Explicit checkpoint loading with weights_only=false for compatibility.",
+        "Added singleton training lock to prevent future concurrent train.py launches writing the same checkpoints/logs.",
+        "Added warm-start fallback: if attempt-mismatch checkpoint exists, reuse model weights instead of cold start.",
+        "Expanded auto-retry policy to increase epochs/patience and adapt LR/label smoothing when targets are missed."
+      ]
+    },
+    {
+      "file": "backend/fabric_classifier/training/resource_manager.py",
+      "changes": [
+        "Added RAM/CPU/VRAM-aware decisions and runtime control flags.",
+        "Added timeout result for wait_until_ram_below_limit.",
+        "Aligned low-memory dataloader worker strategy to zero workers in current constrained mode."
+      ]
+    },
+    {
+      "file": "backend/fabric_classifier/classes.py",
+      "changes": [
+        "Removed high-noise mappings: elastane_spandex, polyolefin, ramie, hemp.",
+        "Further reduced noisy fabric aliases by dropping lace->Cotton and plush->Suede mappings while keeping all classes above minimum image threshold."
+      ]
+    }
+  ],
+  "open_risks_and_blockers": [
+    "Current best validation quality is still far from required done criteria.",
+    "Worst-class recall remains low (about 0.3167 in latest saved stream, still below 0.40 target).",
+    "System RAM frequently exceeds configured threshold and can still slow epoch transitions.",
+    "Concurrent train.py processes are actively racing on shared checkpoint/log files; singleton lock is in code for future launches only."
+  ],
+  "resume_and_recovery_runbook": {
+    "if_process_alive": [
+      "Do not kill the current active training PID.",
+      "Monitor checkpoint epoch in backend/fabric_classifier/weights/fabric_clf_last.pt.",
+      "Monitor runtime flags in backend/fabric_classifier/training/runtime_control/."
+    ],
+    "if_process_stops": [
+      "Run: conda activate myenv; python -u backend/fabric_classifier/training/train.py",
+      "Confirm resume from backend/fabric_classifier/weights/fabric_clf_last.pt.",
+      "Continue attempts until all done criteria are met."
+    ],
+    "validation_commands_reference": [
+      "Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'python' -and $_.CommandLine -match 'backend/fabric_classifier/training/train.py' }",
+      "Get-ChildItem backend/fabric_classifier/weights -Filter *.pt",
+      "conda activate myenv; python -c \"import torch; ck=torch.load('backend/fabric_classifier/weights/fabric_clf_last.pt', map_location='cpu'); print(ck.get('epoch'), ck.get('best_val_score'))\"",
+      "Get-Content backend/fabric_classifier/training/training_log.json -Raw"
+    ]
+  },
+  "project_status_summary": {
+    "overall": "in_progress",
+    "integration_contract_status": "not yet re-verified in this run",
+    "calibration_status": "pending until targets are met",
+    "next_required_milestones": [
+      "Monitor epoch progression and capture continued validation gains.",
+      "Finish Attempt 3 and evaluate on test set.",
+      "If targets still unmet, apply retry/tuning updates and continue training automatically.",
+      "After targets are met, save calibration and re-verify FabricClassifier.predict output contract."
+    ]
+  }
+}

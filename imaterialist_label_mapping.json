@@ -1,0 +1,38 @@
+{
+  "mapping_rules": {
+    "Cotton": "Cotton",
+    "Polyester": "Polyester",
+    "Silk": "Silk",
+    "Denim": "Denim",
+    "Linen": "Linen",
+    "Wool": "Wool",
+    "Leather": "Leather",
+    "Velvet": "Velvet",
+    "Corduroy": "Corduroy",
+    "Fleece": "Fleece",
+    "Nylon": "Nylon",
+    "Satin": "Satin",
+    "Knit": "Knitted",
+    "Suede": "Suede",
+    "Faux Fur": "Fleece",
+    "Cashmere": "Wool"
+  },
+  "counts_per_rule": {
+    "Cotton": 78834,
+    "Polyester": 41956,
+    "Denim": 26222,
+    "Knit": 18805,
+    "Leather": 10075,
+    "Wool": 7914,
+    "Nylon": 7249,
+    "Silk": 6562,
+    "Faux Fur": 6190,
+    "Fleece": 5947,
+    "Satin": 5013,
+    "Velvet": 4357,
+    "Linen": 2120,
+    "Cashmere": 1567,
+    "Suede": 1139,
+    "Corduroy": 568
+  }
+}
