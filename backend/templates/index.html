@@ -3,473 +3,593 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TexClassifier.AI — Garment Material Vision Platform</title>
-  <meta name="description" content="Elevate garment material AI platform correlating textile textures with deep learning multi-patch interior analysis.">
+  <title>TexClassifier.AI — Garment Texture &amp; Material Classifier</title>
+  <meta name="description" content="AI-powered fabric classification using EfficientNet-B0 multi-patch analysis across 14 textile categories.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <!-- Floating Ambient Fiber Particles -->
-  <div class="ambient-canvas-wrapper" aria-hidden="true">
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-    <div class="ambient-orb orb-3"></div>
-    <canvas id="fiber-particles-canvas"></canvas>
+
+  <!-- Ambient Animated Background -->
+  <div class="ambient-bg" id="ambient-bg" aria-hidden="true">
+    <div class="orb orb-1" id="orb-1"></div>
+    <div class="orb orb-2" id="orb-2"></div>
+    <div class="orb orb-3" id="orb-3"></div>
+    <canvas id="particle-canvas"></canvas>
   </div>
 
-  <!-- Navigation Bar -->
-  <nav class="top-nav">
-    <div class="nav-left">
-      <a href="#" class="brand-link" id="nav-brand">
-        <div class="brand-logo-gem">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-        <span class="brand-text">TexClassifier<span class="brand-ai">.AI</span></span>
-      </a>
-      <div class="nav-links">
-        <button type="button" class="nav-tab active" id="tab-landing">Home</button>
-        <button type="button" class="nav-tab" id="tab-dashboard">Dashboard</button>
-        <button type="button" class="nav-tab" id="tab-catalog">14 Fabrics</button>
+  <!-- Global SVG Defs for Gradients & Glows -->
+  <svg width="0" height="0" style="position:absolute;pointer-events:none;">
+    <defs>
+      <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#38BDF8"/>
+        <stop offset="50%" stop-color="#6366F1"/>
+        <stop offset="100%" stop-color="#A855F7"/>
+      </linearGradient>
+      <linearGradient id="bar-cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#38BDF8"/>
+        <stop offset="100%" stop-color="#0284C7"/>
+      </linearGradient>
+      <linearGradient id="bar-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#818CF8"/>
+        <stop offset="100%" stop-color="#6366F1"/>
+      </linearGradient>
+      <linearGradient id="bar-emerald" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#34D399"/>
+        <stop offset="100%" stop-color="#10B981"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- TOP NAVIGATION BAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand" id="nav-brand">
+      <div class="brand-gem">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
+          <line x1="12" y1="2" x2="12" y2="22"/>
+          <line x1="2" y1="8.5" x2="22" y2="8.5"/>
+          <line x1="2" y1="15.5" x2="22" y2="15.5"/>
+        </svg>
       </div>
+      <span class="brand-name">TexClassifier<span class="brand-ai">.AI</span></span>
+    </div>
+
+    <div class="nav-center">
+      <button class="nav-tab active" id="tab-home">Features <span class="nav-caret">&#9662;</span></button>
+      <button class="nav-tab" id="tab-dashboard">Dashboard</button>
+      <button class="nav-tab" id="tab-catalog">14 Fabrics</button>
+      <button class="nav-tab" id="tab-contact">Contact</button>
     </div>
 
     <div class="nav-right">
-      <!-- Hardware / System Status Pill -->
-      <div class="status-pill" id="system-status-pill" title="Hardware Acceleration Profile">
-        <span class="status-dot pulsing"></span>
-        <span class="status-label" id="status-label">EfficientNet-B0 Ready</span>
+      <div class="sys-badge" id="sys-badge">
+        <span class="sys-dot"></span>
+        <span id="sys-label">EfficientNet-B0 Ready</span>
       </div>
-
-      <!-- Theme Switcher (Light / Dark Mode) -->
-      <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle Light / Dark Mode" aria-label="Toggle theme">
-        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="theme-btn" id="theme-btn" aria-label="Toggle Light/Dark Theme" title="Toggle Light/Dark Mode">
+        <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="23"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-          <line x1="1" y1="12" x2="3" y2="12"/>
-          <line x1="21" y1="12" x2="23" y2="12"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
-        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
-
-      <!-- Launch / Action Button -->
-      <button class="btn-nav-action" id="btn-nav-launch">Launch App</button>
+      <button class="btn-signin" id="btn-login">Log In</button>
+      <button class="btn-launch" id="btn-launch">Sign Up</button>
     </div>
   </nav>
 
-  <!-- ======================================================================
-       VIEW 1: LANDING HERO VIEW
-       ====================================================================== -->
-  <section class="landing-view" id="landing-view">
-    <div class="landing-hero-content">
-      <div class="hero-badge-tag">
-        <span class="badge-spark">✨</span>
-        <span>Next-Gen Multi-Patch Garment Vision</span>
+  <!-- ============================================================
+       1. LANDING PAGE VIEW (Matches Light & Dark Mockups)
+       ============================================================ -->
+  <section class="view-landing" id="view-landing">
+    <div class="hero-container">
+      
+      <!-- Top Tag -->
+      <div class="hero-tag">
+        <span class="hero-tag-dot"></span>
+        <span>Multi-Patch Deep Learning &bull; 14 Textile Classes &bull; Apple Silicon</span>
       </div>
-      
+
+      <!-- Main Headline -->
       <h1 class="hero-title">
-        TexClassifier<span class="gradient-text">.AI</span>
+        <span class="hero-brand-line">TexClassifier.AI</span>
       </h1>
-      
-      <p class="hero-subtitle">
-        Elevate garment material AI platform correlating textile textures with deep learning multi-patch interior analysis and real-time hardware diagnostics.
+      <p class="hero-desc">
+        Elevate garment material AI platform conceiving with small floating textile fiber particles
       </p>
 
-      <!-- Main Interactive Target: Analyze Garment Material Card -->
-      <div class="hero-upload-card" id="hero-upload-card">
-        <input type="file" id="hero-file-input" accept="image/*" class="file-input-hidden" />
-        <div class="hero-card-glow"></div>
-        <div class="hero-card-inner">
-          <div class="upload-icon-circle">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- Center Interactive Target (Analyze Garment Material) -->
+      <div class="hero-upload hover-scale-card" id="hero-upload" role="button" tabindex="0" aria-label="Analyze Garment Material">
+        <input type="file" id="hero-file-input" accept="image/*" class="visually-hidden">
+        <div class="hero-upload-glow"></div>
+        <div class="hero-upload-content">
+          <div class="upload-icon-ring">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="17 8 12 3 7 8"/>
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
           </div>
-          <h2 class="hero-card-title">Analyze Garment Material</h2>
-          <p class="hero-card-hint">Drop garment image here or click to browse</p>
-          <div class="hero-card-chips">
+          <h2 class="upload-title">Analyze Garment Material</h2>
+          <p class="upload-hint">Upload by Preview Material</p>
+          <div class="upload-chips">
             <span class="chip">7-Patch Erosion</span>
-            <span class="chip">Apple Silicon Mac</span>
-            <span class="chip">14 Textile Classes</span>
+            <span class="chip">EfficientNet-B0</span>
+            <span class="chip">14 Classes</span>
+            <span class="chip">Real-time</span>
           </div>
         </div>
       </div>
 
-      <!-- Floating Decorative Glass Cards (from mockup) -->
-      <div class="floating-card floating-card-left" id="float-sample-card">
-        <div class="float-card-header">
-          <span class="float-card-title">Linen Fabric</span>
-          <span class="float-tag">Sample</span>
+      <!-- Sample Garments Row -->
+      <div class="hero-samples">
+        <span class="samples-label">Quick Test Garment Samples:</span>
+        <div class="sample-thumbs" id="hero-sample-thumbs">
+          <button class="sample-thumb active" data-sample="poly_cotton_check" title="Poly-cotton check weave">
+            <img src="/api/samples/poly_cotton_check.jpeg" alt="Check Fabric">
+            <span>Check Weave</span>
+          </button>
+          <button class="sample-thumb" data-sample="denim_sample" title="Diagonal twill indigo denim">
+            <img src="/api/samples/denim_sample.jpg" alt="Denim">
+            <span>Denim Twill</span>
+          </button>
+          <button class="sample-thumb" data-sample="silk_sample" title="Emerald glossy fluid silk satin">
+            <img src="/api/samples/silk_sample.jpg" alt="Silk">
+            <span>Silk Satin</span>
+          </button>
+          <button class="sample-thumb" data-sample="wool_knit_sample" title="Natural chunky heathered wool knit">
+            <img src="/api/samples/wool_knit_sample.jpg" alt="Wool">
+            <span>Wool Knit</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Pill Bar -->
+      <div class="hero-stats">
+        <div class="stat-item"><span class="stat-number">14</span><span class="stat-label">Fabric Classes</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-number">7</span><span class="stat-label">Interior Patches</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-number">B0</span><span class="stat-label">EfficientNet</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-number">~270ms</span><span class="stat-label">Inference</span></div>
+      </div>
+
+      <!-- Enter Dashboard Button -->
+      <div class="hero-cta-row">
+        <button class="btn-enter-dashboard" id="btn-enter-dashboard">
+          <span>Open Analysis Dashboard</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Floating Preview Card 1: Left (Linen Fabric Result) -->
+    <div class="float-card float-left hover-scale-card" id="float-left">
+      <div class="float-card-head">
+        <span class="float-badge">Feature Preview</span>
+      </div>
+      <div class="float-card-content-row">
+        <div class="float-thumb-wrap">
+          <img src="/api/samples/poly_cotton_check.jpeg" alt="Linen preview" id="float-thumb-img">
         </div>
         <div class="float-card-body">
-          <img src="/api/samples/poly_cotton_check.jpeg" alt="Linen preview" class="float-thumb" />
-          <div class="float-details">
-            <span class="float-name">Natural Flax Weave</span>
-            <div class="mini-bar-track">
-              <div class="mini-bar-fill" style="width: 66.57%"></div>
-            </div>
-            <span class="float-pct">66.57% Confidence</span>
+          <div class="float-fabric-name" id="float-fabric-name">Linen fabric</div>
+          <div class="float-conf-row">
+            <div class="float-bar-bg"><div class="float-bar-fill" id="float-bar-fill" style="width:66.57%"></div></div>
+            <span class="float-pct" id="float-pct">66.57%</span>
           </div>
+          <div class="float-sub">Top-1 Material Match</div>
         </div>
       </div>
+    </div>
 
-      <div class="floating-card floating-card-right" id="float-catalog-card">
-        <div class="float-card-header">
-          <span class="float-card-title">14 Fabrics Catalog</span>
-          <span class="float-tag">Classes</span>
-        </div>
-        <div class="float-swatches-grid">
-          <div class="swatch-item">
-            <img src="/api/samples/poly_cotton_check.jpeg" alt="Linen" />
-            <span>Linen</span>
-          </div>
-          <div class="swatch-item">
-            <img src="/api/samples/denim_sample.jpg" alt="Denim" />
-            <span>Denim</span>
-          </div>
-          <div class="swatch-item">
-            <img src="/api/samples/silk_sample.jpg" alt="Silk" />
-            <span>Silk</span>
-          </div>
-          <div class="swatch-item">
-            <img src="/api/samples/wool_knit_sample.jpg" alt="Wool" />
-            <span>Wool</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="floating-card floating-card-badge">
-        <div class="badge-icon-box">
+    <!-- Floating Preview Card 2: Top Right (Radar / Feature Preview) -->
+    <div class="float-card float-top-right hover-scale-card" id="float-top-right">
+      <div class="float-card-head">
+        <div class="float-icon-soft">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
           </svg>
         </div>
-        <div class="badge-text-box">
-          <strong>Elegant Cards</strong>
-          <span>Smooth texture tests &amp; Mac stats</span>
+        <div>
+          <span class="float-title-sm">Feature Preview</span>
+          <p class="float-sub-sm">Microstructure radar soft fade-in shadow effects</p>
         </div>
       </div>
-
-      <!-- Scroll to Dashboard indicator -->
-      <button class="scroll-down-btn" id="btn-scroll-dashboard" title="Enter Dashboard">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </button>
     </div>
+
+    <!-- Floating Preview Card 3: Right (14 Fabrics Catalog Grid) -->
+    <div class="float-card float-right hover-scale-card" id="float-right">
+      <div class="float-card-head">
+        <span class="float-badge">14 Fabrics Catalog</span>
+      </div>
+      <div class="float-swatches">
+        <div class="float-swatch swatch-linen"><span>Linen</span></div>
+        <div class="float-swatch swatch-cotton"><span>Cotton</span></div>
+        <div class="float-swatch swatch-hemp"><span>Hemp</span></div>
+        <div class="float-swatch swatch-corduroy"><span>Corduroy</span></div>
+        <div class="float-swatch swatch-denim"><span>Denim</span></div>
+        <div class="float-swatch swatch-silk"><span>Silk</span></div>
+      </div>
+    </div>
+
+    <!-- Floating Hardware Status Pill: Bottom Right -->
+    <div class="float-card float-hw-pill hover-scale-card" id="float-hw-pill">
+      <span class="hw-dot"></span>
+      <span class="hw-text" id="hw-pill-text">Apple Silicon (CPU) &bull; EfficientNet-B0 Ready</span>
+    </div>
+
   </section>
 
-
-  <!-- ======================================================================
-       VIEW 2: DASHBOARD VIEW
-       ====================================================================== -->
-  <section class="dashboard-view hidden" id="dashboard-view">
+  <!-- ============================================================
+       2. DASHBOARD VIEW (Matches Light & Dark Mockups)
+       ============================================================ -->
+  <section class="view-dashboard hidden" id="view-dashboard">
     
-    <!-- Sidebar Navigation -->
-    <aside class="dashboard-sidebar">
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar">
       <div class="sidebar-top">
-        <button class="sidebar-icon-btn active" title="Dashboard Home" id="btn-side-home">
+        <div class="sb-logo" title="TexClassifier.AI">
+          <span>T</span>
+        </div>
+        <button class="sb-btn active" id="sb-home" title="Dashboard">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7"/>
-            <rect x="14" y="3" width="7" height="7"/>
-            <rect x="14" y="14" width="7" height="7"/>
-            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
           </svg>
         </button>
-        <button class="sidebar-icon-btn" title="Garment Ingestion" id="btn-side-ingestion">
+        <button class="sb-btn" id="sb-upload" title="Upload Image">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
         </button>
-        <button class="sidebar-icon-btn" title="14 Fabrics Catalog" id="btn-side-catalog">
+        <button class="sb-btn" id="sb-catalog" title="14 Fabrics Catalog">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="16" x2="12" y2="12"/>
-            <line x1="12" y1="8" x2="12.01" y2="8"/>
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
           </svg>
         </button>
-        <button class="sidebar-icon-btn" title="System Diagnostics" id="btn-side-diagnostics">
+        <button class="sb-btn" id="sb-diag" title="System Diagnostics">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
           </svg>
         </button>
       </div>
-
       <div class="sidebar-bottom">
-        <button class="sidebar-icon-btn" title="Return to Landing Hero" id="btn-side-exit">
+        <button class="sb-btn" id="sb-exit" title="Back to Landing Page">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
         </button>
       </div>
     </aside>
 
-    <!-- Main Dashboard Area -->
-    <main class="dashboard-main">
+    <!-- Main Dashboard Body -->
+    <main class="dash-main">
       
-      <!-- Dashboard Top Header Bar -->
+      <!-- Top Header -->
       <header class="dash-header">
-        <div class="dash-title-group">
-          <h2 class="dash-heading">Dashboard</h2>
-          <span class="dash-sub">Intelligent Garment Texture Analysis &amp; Metrics</span>
+        <div class="dash-title">
+          <h2>Dashboard</h2>
+          <span>Intelligent Garment Texture Analysis &amp; Diagnostics</span>
         </div>
-
-        <div class="dash-actions">
-          <button class="dash-action-btn" id="btn-dash-back-landing">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="19" y1="12" x2="5" y2="12"/>
-              <polyline points="12 19 5 12 12 5"/>
+        <div class="dash-header-right">
+          <div class="dash-search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            Landing Page
-          </button>
-          <div class="dash-avatar" title="Active Session">
-            <span>AI</span>
+            <input type="text" placeholder="Search textile classes..." id="dash-search-input" readonly>
           </div>
+          <button class="dash-icon-btn" title="System Notifications">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </button>
+          <button class="btn-back-landing" id="btn-back-landing">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Landing
+          </button>
+          <div class="dash-avatar" title="TexClassifier AI Engine">AI</div>
         </div>
       </header>
 
       <!-- Dashboard Interactive Grid -->
       <div class="dash-grid">
 
-        <!-- Column 1: Ingestion Card -->
-        <section class="dash-card card-ingestion" id="card-ingestion">
-          <div class="card-header-row">
-            <span class="card-title">Ingestion</span>
-            <span class="card-badge" id="ingestion-status-badge">Ready</span>
+        <!-- 1. Card: Ingestion -->
+        <div class="d-card card-ingestion hover-scale-card" id="card-ingestion">
+          <div class="d-card-hdr">
+            <div class="d-hdr-left">
+              <span class="d-card-title">Ingestion</span>
+              <span class="d-chevron">&rsaquo;</span>
+            </div>
+            <span class="badge badge-ready" id="ingestion-badge">Ready</span>
           </div>
 
-          <div class="dash-dropzone" id="dash-dropzone">
-            <input type="file" id="dash-file-input" accept="image/*" class="file-input-hidden" />
-            <div class="dash-preview-box" id="dash-preview-box">
-              <img id="dash-preview-img" src="/api/samples/poly_cotton_check.jpeg" alt="Selected garment" />
-              <div class="preview-tag" id="dash-preview-tag">Uploaded</div>
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="dash-file-input" accept="image/*" class="visually-hidden">
+            <div class="dropzone-preview" id="dropzone-preview">
+              <img id="preview-img" src="/api/samples/poly_cotton_check.jpeg" alt="Garment Fabric">
+              <span class="dropzone-tag-uploaded" id="tag-uploaded">Uploaded</span>
+              <div class="preview-overlay" id="preview-overlay">
+                <span>Click or drop image</span>
+              </div>
             </div>
           </div>
 
-          <div class="ingestion-info-row">
-            <strong id="dash-filename-label">Linen Fabric</strong>
-            <span class="dash-file-meta" id="dash-file-meta">800 × 800 • Preset</span>
+          <div class="ingestion-meta">
+            <strong id="img-filename">Linen fabric</strong>
+            <span id="img-meta">Preset garment sample &bull; 1000&times;1000</span>
           </div>
 
-          <!-- Quick Test Samples -->
-          <div class="dash-samples-row">
-            <span class="samples-label">Quick Test:</span>
-            <div class="samples-pills" id="samples-pills">
-              <button type="button" class="sample-pill active" data-sample="poly_cotton_check">Check Linen</button>
-              <button type="button" class="sample-pill" data-sample="denim_sample">Denim Twill</button>
-              <button type="button" class="sample-pill" data-sample="silk_sample">Silk Satin</button>
-              <button type="button" class="sample-pill" data-sample="wool_knit_sample">Wool Knit</button>
+          <div class="quick-samples">
+            <span class="qs-label">Quick Test Garment Samples:</span>
+            <div class="qs-pills" id="qs-pills">
+              <button class="qs-pill active" data-sample="poly_cotton_check">Check</button>
+              <button class="qs-pill" data-sample="denim_sample">Denim</button>
+              <button class="qs-pill" data-sample="silk_sample">Silk</button>
+              <button class="qs-pill" data-sample="wool_knit_sample">Wool</button>
             </div>
           </div>
 
-          <!-- Primary CTA Button -->
-          <button class="btn-classify-main" id="btn-dash-classify">
-            <span class="btn-spinner hidden" id="dash-spinner"></span>
-            <span class="btn-label" id="dash-classify-label">Classify Fabric Material</span>
+          <button class="btn-classify" id="btn-classify">
+            <span class="btn-spinner-ring hidden" id="classify-spinner"></span>
+            <span id="classify-label">Classify Fabric Material</span>
           </button>
-        </section>
+        </div>
 
-        <!-- Column 2: Center Visualizer / Loading & Processing -->
-        <section class="dash-card card-visualizer" id="card-visualizer">
-          <div class="card-header-row">
-            <span class="card-title">Processing Visualizer</span>
-            <span class="card-badge-pulse" id="visualizer-status">Live</span>
+        <!-- 2. Card: Processing Visualizer (Loading Bar) -->
+        <div class="d-card card-visualizer hover-scale-card" id="card-visualizer">
+          <div class="d-card-hdr">
+            <span class="d-card-title" id="vis-card-title">Classify Fabric</span>
+            <span class="badge-live" id="vis-badge">Live</span>
           </div>
-
-          <!-- Loader Ring State (shown during processing) -->
-          <div class="visualizer-content" id="visualizer-loading-state">
-            <div class="radial-spinner-container">
-              <div class="radial-spinner-ring" id="radial-spinner-ring"></div>
-              <div class="radial-spinner-inner">
-                <span class="spinner-pct" id="spinner-pct">100%</span>
+          <div class="vis-body">
+            <div class="vis-status-desc" id="vis-desc">Extracting 7 garment interior patches...</div>
+            <div class="ring-container">
+              <div class="ring-glow-aura" id="ring-aura"></div>
+              <svg class="ring-svg" viewBox="0 0 120 120">
+                <circle class="ring-track" cx="60" cy="60" r="52"/>
+                <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"
+                  stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+              </svg>
+              <div class="ring-center">
+                <span class="ring-pct" id="ring-pct">0%</span>
+                <span class="ring-sub" id="ring-sub">complete</span>
               </div>
             </div>
-            <h3 class="visualizer-step-title" id="visualizer-step-title">Multi-Patch Analysis</h3>
-            <p class="visualizer-step-desc" id="visualizer-step-desc">
-              Extracting 7 garment interior patches, eroding zippers/edges, and averaging softmax logits.
-            </p>
-            <div class="dynamic-progress-bar">
-              <div class="dynamic-progress-fill" id="dynamic-progress-fill" style="width: 100%;"></div>
+
+            <!-- Left-to-right / Vertical 4-Stage Pipeline -->
+            <div class="vis-steps">
+              <div class="vis-step" id="step-patch">
+                <div class="step-dot" id="dot-patch"></div>
+                <div class="step-info">
+                  <span class="step-name">1. Patch Extraction</span>
+                  <span class="step-desc">7 interior fabric crops</span>
+                </div>
+              </div>
+              <div class="vis-step" id="step-preprocess">
+                <div class="step-dot" id="dot-preprocess"></div>
+                <div class="step-info">
+                  <span class="step-name">2. Preprocessing</span>
+                  <span class="step-desc">Normalize &bull; 224&times;224 tensor</span>
+                </div>
+              </div>
+              <div class="vis-step" id="step-inference">
+                <div class="step-dot" id="dot-inference"></div>
+                <div class="step-info">
+                  <span class="step-name">3. Model Inference</span>
+                  <span class="step-desc">EfficientNet-B0 forward pass</span>
+                </div>
+              </div>
+              <div class="vis-step" id="step-aggregation">
+                <div class="step-dot" id="dot-aggregation"></div>
+                <div class="step-info">
+                  <span class="step-name">4. Logit Aggregation</span>
+                  <span class="step-desc">Softmax average &bull; T=1.0</span>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- Column 3: Prediction Card -->
-        <section class="dash-card card-prediction" id="card-prediction">
-          <div class="card-header-row">
-            <span class="card-title">Prediction</span>
-            <span class="confidence-pill" id="pred-confidence-badge">Top-1 Result</span>
+        <!-- 3. Card: Prediction -->
+        <div class="d-card card-prediction hover-scale-card" id="card-prediction">
+          <div class="d-card-hdr">
+            <span class="d-card-title">Prediction</span>
+            <span class="conf-badge" id="conf-badge">Top-1</span>
           </div>
-
-          <div class="prediction-body">
-            <span class="pred-category" id="pred-category">Natural Flax Fiber</span>
-            <h1 class="pred-name" id="pred-name">LINEN</h1>
-            <div class="pred-score-row">
-              <span class="pred-score" id="pred-score">66.57%</span>
-              <span class="pred-score-sub">Confidence</span>
+          <div class="pred-body">
+            <div class="pred-fabric-wrap">
+              <div class="pred-fabric" id="pred-fabric">LINEN</div>
+              <div class="pred-category" id="pred-category">(Natural Flax Fiber)</div>
             </div>
+            
+            <div class="pred-score-block">
+              <div class="pred-score" id="pred-score">66.57%</div>
+              <div class="pred-score-label">Confidence</div>
+            </div>
+
+            <div class="pred-bar-bg">
+              <div class="pred-bar-fill" id="pred-bar-fill" style="width:66.57%"></div>
+            </div>
+
             <p class="pred-tagline" id="pred-tagline">
-              Crisp, ultra-breathable ancient fiber that softens with age and wear.
+              Spun from flax plant stems, linen has natural hollow fibers that provide supreme airflow and moisture dissipation.
             </p>
           </div>
-        </section>
 
-        <!-- Column 4: Top-3 Contenders -->
-        <section class="dash-card card-contenders" id="card-contenders">
-          <div class="card-header-row">
-            <span class="card-title">Top-3 Contenders</span>
-            <span class="card-sub-hint">API Contract</span>
+          <div class="pred-props" id="pred-props">
+            <div class="prop-item"><span class="prop-label">Breathability</span><span class="prop-val" id="pv-breathability">Maximum</span></div>
+            <div class="prop-item"><span class="prop-label">Durability</span><span class="prop-val" id="pv-durability">High</span></div>
+            <div class="prop-item"><span class="prop-label">Stretch</span><span class="prop-val" id="pv-stretch">Minimal</span></div>
+            <div class="prop-item"><span class="prop-label">Texture</span><span class="prop-val" id="pv-texture">Crisp slub weave</span></div>
           </div>
+        </div>
 
-          <div class="contenders-list" id="contenders-list">
-            <!-- Rendered via JS -->
-            <div class="contender-row rank-1">
-              <div class="contender-header">
-                <span class="contender-name"><span class="rank-dot"></span> Linen</span>
-                <span class="contender-rank">#1</span>
-              </div>
-              <div class="contender-bar-track">
-                <div class="contender-bar-fill fill-1" style="width: 66.57%"></div>
-              </div>
-              <span class="contender-score">66.57%</span>
-            </div>
-
-            <div class="contender-row rank-2">
-              <div class="contender-header">
-                <span class="contender-name"><span class="rank-dot"></span> Silk</span>
-                <span class="contender-rank">#2</span>
-              </div>
-              <div class="contender-bar-track">
-                <div class="contender-bar-fill fill-2" style="width: 9.10%"></div>
-              </div>
-              <span class="contender-score">9.10%</span>
-            </div>
-
-            <div class="contender-row rank-3">
-              <div class="contender-header">
-                <span class="contender-name"><span class="rank-dot"></span> Nylon</span>
-                <span class="contender-rank">#3</span>
-              </div>
-              <div class="contender-bar-track">
-                <div class="contender-bar-fill fill-3" style="width: 6.86%"></div>
-              </div>
-              <span class="contender-score">6.86%</span>
-            </div>
+        <!-- 4. Card: Top-3 Contenders -->
+        <div class="d-card card-contenders hover-scale-card" id="card-contenders">
+          <div class="d-card-hdr">
+            <span class="d-card-title">Top-3 Contenders</span>
+            <span class="d-card-sub">Ranked by confidence</span>
           </div>
-        </section>
-
-        <!-- Full Width Row: 7-Patch Multi-Crop Carousel Slider -->
-        <section class="dash-card card-patch-slider" id="card-patch-slider">
-          <div class="card-header-row">
-            <div class="patch-header-left">
-              <span class="card-title">7-Patch Multi-Crop Texture Inspector</span>
-              <span class="card-sub-hint">Interior Fabric Crops (160×160 → 224×224)</span>
-            </div>
-            <div class="slider-controls">
-              <button class="slider-nav-btn" id="slider-prev" title="Previous Patches">&lt;</button>
-              <div class="slider-dots" id="slider-dots">
-                <span class="slider-dot active"></span>
-                <span class="slider-dot"></span>
+          
+          <div class="contenders" id="contenders">
+            <div class="contender-row">
+              <div class="contender-hdr">
+                <span class="contender-name">Linen</span>
+                <span class="rank-num">#1</span>
               </div>
-              <button class="slider-nav-btn" id="slider-next" title="Next Patches">&gt;</button>
+              <div class="c-bar-bg">
+                <div class="c-bar-fill c-fill-1" style="width:100%"></div>
+              </div>
+              <span class="contender-pct" style="color:var(--cyan)">66.57%</span>
+            </div>
+
+            <div class="contender-row">
+              <div class="contender-hdr">
+                <span class="contender-name">Cotton</span>
+                <span class="rank-num">#2</span>
+              </div>
+              <div class="c-bar-bg">
+                <div class="c-bar-fill c-fill-2" style="width:13.67%"></div>
+              </div>
+              <span class="contender-pct" style="color:var(--indigo)">9.10%</span>
+            </div>
+
+            <div class="contender-row">
+              <div class="contender-hdr">
+                <span class="contender-name">Hemp</span>
+                <span class="rank-num">#3</span>
+              </div>
+              <div class="c-bar-bg">
+                <div class="c-bar-fill c-fill-3" style="width:10.30%"></div>
+              </div>
+              <span class="contender-pct" style="color:var(--emerald)">6.86%</span>
             </div>
           </div>
 
-          <div class="slider-viewport" id="slider-viewport">
-            <div class="slider-track" id="slider-track">
-              <!-- Rendered via JS -->
+          <button class="btn-show-dist" id="btn-show-dist">Show Full Distribution (14 classes)</button>
+          <div class="full-dist hidden" id="full-dist"></div>
+        </div>
+
+        <!-- 5. Card: 7-Patch Multi-Crop Inspector (Spanning Wide) -->
+        <div class="d-card card-patches hover-scale-card" id="card-patches">
+          <div class="d-card-hdr">
+            <div class="patches-hdr-left">
+              <span class="d-card-title">7-Patch Multi-Crop</span>
+              <span class="badge-hover-pill">highlight: hover</span>
+            </div>
+            <div class="slider-ctrl">
+              <button class="slider-btn" id="patch-prev" aria-label="Previous patches">&#8249;</button>
+              <div class="slider-dots-row" id="slider-dots"></div>
+              <button class="slider-btn" id="patch-next" aria-label="Next patches">&#8250;</button>
             </div>
           </div>
-        </section>
-
-        <!-- Bottom Row: Diagnostic Metrics Grid -->
-        <section class="dash-card card-diagnostics" id="card-diagnostics">
-          <div class="card-header-row">
-            <span class="card-title">Diagnostic Metrics</span>
-            <span class="card-sub-hint">Host Hardware Diagnostics</span>
+          <div class="patch-viewport">
+            <div class="patch-track" id="patch-track">
+              <!-- Dynamically populated or rendered patches -->
+              <div class="patch-placeholder">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <p>Run classification to inspect the 7 cropped interior textures</p>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div class="diag-metrics-grid">
+        <!-- 6. Card: Diagnostic Metrics (4 Stat Items) -->
+        <div class="d-card card-diagnostics hover-scale-card" id="card-diagnostics">
+          <div class="d-card-hdr">
+            <span class="d-card-title">Diagnostic Metrics</span>
+            <span class="d-card-sub" id="d-device-sub">Apple Silicon &bull; ARM64</span>
+          </div>
+          <div class="diag-grid">
             <div class="diag-item">
-              <span class="diag-label">Total Latency</span>
-              <strong class="diag-val" id="diag-total-time">271.15 <span class="unit">ms</span></strong>
-              <span class="diag-sub">End-to-end runtime</span>
+              <span class="diag-lbl">Diagnostic</span>
+              <strong class="diag-val" id="d-patch">3.58</strong>
+              <span class="diag-sub">Patch extraction (ms)</span>
             </div>
-
             <div class="diag-item">
-              <span class="diag-label">Model Forward Pass</span>
-              <strong class="diag-val" id="diag-model-time">261.88 <span class="unit">ms</span></strong>
-              <span class="diag-sub">EfficientNet-B0</span>
+              <span class="diag-lbl">Prediction</span>
+              <strong class="diag-val" id="d-pred-stat">66.57%</strong>
+              <span class="diag-sub">Top-1 Confidence</span>
             </div>
-
             <div class="diag-item">
-              <span class="diag-label">Patch Extraction</span>
-              <strong class="diag-val" id="diag-patch-time">5.53 <span class="unit">ms</span></strong>
-              <span class="diag-sub">7 Garment crops</span>
+              <span class="diag-lbl">Metrics</span>
+              <strong class="diag-val" id="d-model">2.18</strong>
+              <span class="diag-sub">Model Forward (ms)</span>
             </div>
-
             <div class="diag-item">
-              <span class="diag-label">RAM Footprint</span>
-              <strong class="diag-val" id="diag-ram-footprint">Apple Silicon <span class="unit">CPU</span></strong>
-              <span class="diag-sub" id="diag-ram-sub">ARM64 Architecture</span>
+              <span class="diag-lbl">Resolution</span>
+              <strong class="diag-val" id="d-res">1000&times;1000</strong>
+              <span class="diag-sub" id="d-total-sub">7 Patches Analyzed</span>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- Bottom Row: JSON Inspector Accordion Drawer -->
-        <section class="dash-card card-json" id="card-json">
-          <div class="accordion-header" id="json-accordion-header">
-            <div class="accordion-title-row">
-              <span class="card-title">JSON Inspector</span>
-              <span class="card-sub-hint">Raw API Response Payload</span>
+        <!-- 7. Card: JSON Inspector (Expandable Drawer with Smooth Height Animation) -->
+        <div class="d-card card-json hover-scale-card" id="card-json">
+          <div class="json-header" id="json-toggle" role="button" tabindex="0">
+            <div class="json-header-left">
+              <span class="d-card-title">JSON Inspector</span>
+              <span class="d-card-sub">Raw API Response</span>
             </div>
-            <div class="accordion-actions">
-              <button class="btn-copy-json" id="btn-copy-json" type="button">Copy JSON</button>
-              <span class="accordion-arrow" id="accordion-arrow">▼</span>
+            <div class="json-actions">
+              <button class="btn-copy" id="btn-copy-json" title="Copy raw JSON response">Copy</button>
+              <span class="json-arrow" id="json-arrow">&#9660;</span>
             </div>
           </div>
-          <div class="accordion-body" id="json-accordion-body">
-            <pre class="json-code" id="dash-json-code"></pre>
+          <div class="json-body" id="json-body">
+            <div class="json-body-inner">
+              <pre class="json-pre" id="json-pre">// Results will appear here after classification</pre>
+            </div>
           </div>
-        </section>
+        </div>
 
       </div>
     </main>
   </section>
 
-  <!-- ======================================================================
-       14 FABRICS CATALOG MODAL
-       ====================================================================== -->
+  <!-- 14 FABRICS TAXONOMY MODAL -->
   <div class="modal-overlay hidden" id="catalog-modal">
     <div class="modal-card">
-      <div class="modal-header">
+      <div class="modal-hdr">
         <div>
           <h2 class="modal-title">14 Supported Fabric Classes</h2>
-          <p class="modal-sub">Target TextileNet fabric classes trained in EfficientNet-B0</p>
+          <p class="modal-sub">EfficientNet-B0 trained on TextileNet fabric taxonomy</p>
         </div>
-        <button class="modal-close" id="btn-close-modal">&times;</button>
+        <button class="modal-close" id="modal-close">&times;</button>
       </div>
-      <div class="modal-body" id="catalog-list">
-        <!-- Rendered via JS -->
-      </div>
+      <div class="modal-body" id="catalog-list"></div>
     </div>
   </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
 
   <script src="/static/js/app.js"></script>
 </body>

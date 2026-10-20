@@ -336,9 +336,13 @@ class FabricWebService:
         # Convert patches to base64 for frontend inspection
         patch_thumbnails = []
         for i, p in enumerate(patches):
+            d_uri = _image_to_base64_jpeg(p, quality=85)
+            raw_b64 = d_uri.split(",", 1)[1] if "," in d_uri else d_uri
             patch_thumbnails.append({
                 "patch_index": i + 1,
-                "data_uri": _image_to_base64_jpeg(p, quality=85),
+                "data_uri": d_uri,
+                "image_url": d_uri,
+                "image_base64": raw_b64,
                 "width": p.width,
                 "height": p.height
             })
@@ -364,6 +368,7 @@ class FabricWebService:
             prob = float(calibrated_probs[idx].item())
             all_classes_list.append({
                 "name": class_name,
+                "class_name": class_name,
                 "confidence": round(prob * 100, 2),
                 "probability": round(prob, 4),
                 "index": idx
@@ -393,17 +398,23 @@ class FabricWebService:
         
         # System metrics snapshot
         sys_metrics = self.get_system_metrics()
+
+        pred_obj = {
+            "name": winner_name,
+            "class_name": winner_name,
+            "confidence": top_1["confidence"],
+            "rank": 1,
+            "category": fabric_profile["category"],
+            "tagline": fabric_profile["tagline"],
+            "profile": fabric_profile,
+            "properties": fabric_profile.get("properties", {})
+        }
         
         return {
-            "prediction": {
-                "name": winner_name,
-                "confidence": top_1["confidence"],
-                "rank": 1,
-                "category": fabric_profile["category"],
-                "tagline": fabric_profile["tagline"],
-                "profile": fabric_profile
-            },
+            "prediction": pred_obj,
+            "top_class": pred_obj,
             "top_3": top_3,
+            "top3": top_3,
             "all_classes": all_classes_list,
             "metrics": {
                 "total_latency_ms": total_time_ms,
@@ -416,6 +427,18 @@ class FabricWebService:
                 "model_backbone": sys_metrics["model_backbone"],
                 "weights_checkpoint": sys_metrics["weights_file"],
                 "temperature": sys_metrics["temperature_calibration"]
+            },
+            "timing": {
+                "total_ms": total_time_ms,
+                "patch_ms": patch_time_ms,
+                "model_ms": model_time_ms
+            },
+            "system": {
+                "device": sys_metrics["device"],
+                "arch": sys_metrics["architecture"],
+                "cpu_percent": sys_metrics["cpu_percent"],
+                "ram_percent": sys_metrics["ram_used_percent"],
+                "model": sys_metrics["model_backbone"]
             },
             "image_info": {
                 "width": img_w,

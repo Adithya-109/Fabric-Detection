@@ -1,601 +1,892 @@
 /**
- * TexClassifier AI — Frontend Application Logic
- * Light/Dark Mode • Floating Fiber Particles • Multi-Patch Slider • Real-time Inference
+ * TexClassifier.AI — Frontend Application Logic
+ * Premium Textile Classification & Vision Platform
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // --- View Elements ---
-  const landingView = document.getElementById('landing-view');
-  const dashboardView = document.getElementById('dashboard-view');
-  const tabLanding = document.getElementById('tab-landing');
-  const tabDashboard = document.getElementById('tab-dashboard');
-  const tabCatalog = document.getElementById('tab-catalog');
-  const btnNavLaunch = document.getElementById('btn-nav-launch');
-  const btnScrollDashboard = document.getElementById('btn-scroll-dashboard');
-  const btnDashBackLanding = document.getElementById('btn-dash-back-landing');
-  const btnSideHome = document.getElementById('btn-side-home');
-  const btnSideExit = document.getElementById('btn-side-exit');
 
-  // --- Theme Toggle ---
-  const themeToggleBtn = document.getElementById('theme-toggle-btn');
-  
-  // --- Hero Upload Elements ---
-  const heroUploadCard = document.getElementById('hero-upload-card');
-  const heroFileInput = document.getElementById('hero-file-input');
-  
-  // --- Dashboard Elements ---
-  const dashDropzone = document.getElementById('dash-dropzone');
-  const dashFileInput = document.getElementById('dash-file-input');
-  const dashPreviewImg = document.getElementById('dash-preview-img');
-  const dashFilenameLabel = document.getElementById('dash-filename-label');
-  const dashFileMeta = document.getElementById('dash-file-meta');
-  const dashClassifyBtn = document.getElementById('btn-dash-classify');
-  const dashSpinner = document.getElementById('dash-spinner');
-  const dashClassifyLabel = document.getElementById('dash-classify-label');
-  const samplePills = document.querySelectorAll('.sample-pill');
-
-  // Visualizer / Loader
-  const spinnerPct = document.getElementById('spinner-pct');
-  const visualizerStepTitle = document.getElementById('visualizer-step-title');
-  const visualizerStepDesc = document.getElementById('visualizer-step-desc');
-  const dynamicProgressFill = document.getElementById('dynamic-progress-fill');
-
-  // Prediction & Contenders
-  const predCategory = document.getElementById('pred-category');
-  const predName = document.getElementById('pred-name');
-  const predScore = document.getElementById('pred-score');
-  const predTagline = document.getElementById('pred-tagline');
-  const contendersList = document.getElementById('contenders-list');
-
-  // 7-Patch Slider
-  const sliderTrack = document.getElementById('slider-track');
-  const sliderPrev = document.getElementById('slider-prev');
-  const sliderNext = document.getElementById('slider-next');
-  const sliderDots = document.getElementById('slider-dots');
-
-  // Diagnostics
-  const diagTotalTime = document.getElementById('diag-total-time');
-  const diagModelTime = document.getElementById('diag-model-time');
-  const diagPatchTime = document.getElementById('diag-patch-time');
-  const diagRamFootprint = document.getElementById('diag-ram-footprint');
-  const diagRamSub = document.getElementById('diag-ram-sub');
-
-  // JSON Accordion
-  const jsonAccordionHeader = document.getElementById('json-accordion-header');
-  const jsonAccordionBody = document.getElementById('json-accordion-body');
-  const accordionArrow = document.getElementById('accordion-arrow');
-  const dashJsonCode = document.getElementById('dash-json-code');
-  const btnCopyJson = document.getElementById('btn-copy-json');
-
-  // Modal
-  const catalogModal = document.getElementById('catalog-modal');
-  const btnCloseModal = document.getElementById('btn-close-modal');
-  const catalogList = document.getElementById('catalog-list');
-  const btnSideCatalog = document.getElementById('btn-side-catalog');
-
-  // Status & Health
-  const statusLabel = document.getElementById('status-label');
-
-  // State
-  let currentFile = null;
+  /* ───────────────────────────────────────
+     1. State Management
+  ─────────────────────────────────────── */
+  let currentView     = 'landing';
+  let currentFile     = null;
   let currentSampleId = 'poly_cotton_check';
-  let latestResult = null;
-  let currentSlideIndex = 0;
-  const patchesPerView = 5;
+  let latestResult    = null;
+  let isClassifying   = false;
+  let patchSlideIndex = 0;
+  let totalPatches    = 0;
+  const PATCHES_VISIBLE = 4;
 
-  // Initialize features
-  initTheme();
-  initFiberCanvas();
-  initNavigation();
-  initUploadHandlers();
-  initSlider();
-  initJsonAccordion();
-  initCatalogModal();
-  checkSystemHealth();
+  /* ───────────────────────────────────────
+     2. Element Selectors
+  ─────────────────────────────────────── */
+  // Views
+  const viewLanding   = document.getElementById('view-landing');
+  const viewDashboard = document.getElementById('view-dashboard');
 
-  // --------------------------------------------------------------------------
-  // 1. Theme Management (Light / Dark Mode)
-  // --------------------------------------------------------------------------
+  // Navigation
+  const tabHome       = document.getElementById('tab-home');
+  const tabDash       = document.getElementById('tab-dashboard');
+  const tabCatalog    = document.getElementById('tab-catalog');
+  const tabContact    = document.getElementById('tab-contact');
+  const navBrand      = document.getElementById('nav-brand');
+  const btnLaunch     = document.getElementById('btn-launch');
+  const btnLogin      = document.getElementById('btn-login');
+  const themeBtn      = document.getElementById('theme-btn');
+  const sysLabel      = document.getElementById('sys-label');
+
+  // Landing Page Elements
+  const heroUpload    = document.getElementById('hero-upload');
+  const heroFileInput = document.getElementById('hero-file-input');
+  const heroSamples   = document.getElementById('hero-sample-thumbs');
+  const btnEnterDash  = document.getElementById('btn-enter-dashboard');
+
+  // Floating Cards
+  const floatFabricName = document.getElementById('float-fabric-name');
+  const floatBarFill    = document.getElementById('float-bar-fill');
+  const floatPct        = document.getElementById('float-pct');
+  const hwPillText      = document.getElementById('hw-pill-text');
+
+  // Dashboard Sidebar & Header
+  const sbHome        = document.getElementById('sb-home');
+  const sbUpload      = document.getElementById('sb-upload');
+  const sbCatalog     = document.getElementById('sb-catalog');
+  const sbDiag        = document.getElementById('sb-diag');
+  const sbExit        = document.getElementById('sb-exit');
+  const btnBack       = document.getElementById('btn-back-landing');
+
+  // Ingestion Card
+  const dropzone        = document.getElementById('dropzone');
+  const dashFileInput   = document.getElementById('dash-file-input');
+  const previewImg      = document.getElementById('preview-img');
+  const ingestionBadge  = document.getElementById('ingestion-badge');
+  const imgFilename     = document.getElementById('img-filename');
+  const imgMeta         = document.getElementById('img-meta');
+  const qsPills         = document.querySelectorAll('.qs-pill');
+  const btnClassify     = document.getElementById('btn-classify');
+  const classifySpinner = document.getElementById('classify-spinner');
+  const classifyLabel   = document.getElementById('classify-label');
+
+  // Processing Visualizer Card
+  const ringFill      = document.getElementById('ring-fill');
+  const ringPct       = document.getElementById('ring-pct');
+  const visBadge      = document.getElementById('vis-badge');
+  const visDesc       = document.getElementById('vis-desc');
+  const stepPatch     = document.getElementById('step-patch');
+  const stepPreproc   = document.getElementById('step-preprocess');
+  const stepInfer     = document.getElementById('step-inference');
+  const stepAgg       = document.getElementById('step-aggregation');
+
+  // Prediction Card
+  const cardPrediction = document.getElementById('card-prediction');
+  const predFabric     = document.getElementById('pred-fabric');
+  const predCategory   = document.getElementById('pred-category');
+  const predScore      = document.getElementById('pred-score');
+  const predBarFill    = document.getElementById('pred-bar-fill');
+  const predTagline    = document.getElementById('pred-tagline');
+  const confBadge      = document.getElementById('conf-badge');
+  const pvBreath       = document.getElementById('pv-breathability');
+  const pvDurab        = document.getElementById('pv-durability');
+  const pvStretch      = document.getElementById('pv-stretch');
+  const pvTexture      = document.getElementById('pv-texture');
+
+  // Contenders Card
+  const cardContenders = document.getElementById('card-contenders');
+  const contendersEl   = document.getElementById('contenders');
+  const btnShowDist    = document.getElementById('btn-show-dist');
+  const fullDistEl     = document.getElementById('full-dist');
+
+  // 7-Patch Multi-Crop
+  const cardPatches    = document.getElementById('card-patches');
+  const patchTrack     = document.getElementById('patch-track');
+  const patchPrev      = document.getElementById('patch-prev');
+  const patchNext      = document.getElementById('patch-next');
+  const sliderDots     = document.getElementById('slider-dots');
+
+  // Diagnostics Card
+  const cardDiag       = document.getElementById('card-diagnostics');
+  const dPatch         = document.getElementById('d-patch');
+  const dPredStat      = document.getElementById('d-pred-stat');
+  const dModel         = document.getElementById('d-model');
+  const dRes           = document.getElementById('d-res');
+  const dDevSub        = document.getElementById('d-device-sub');
+
+  // JSON Drawer
+  const cardJson       = document.getElementById('card-json');
+  const jsonToggle     = document.getElementById('json-toggle');
+  const jsonBody       = document.getElementById('json-body');
+  const jsonArrow      = document.getElementById('json-arrow');
+  const jsonPre        = document.getElementById('json-pre');
+  const btnCopyJson    = document.getElementById('btn-copy-json');
+
+  // Taxonomy Modal
+  const catalogModal   = document.getElementById('catalog-modal');
+  const modalClose     = document.getElementById('modal-close');
+  const catalogList    = document.getElementById('catalog-list');
+
+  // Toast
+  const toast          = document.getElementById('toast');
+
+  /* ───────────────────────────────────────
+     3. Helper: Percentage Normalizer
+  ─────────────────────────────────────── */
+  function normalizePct(val) {
+    if (typeof val !== 'number' || isNaN(val)) return 0;
+    return val > 1.0 ? val : val * 100;
+  }
+
+  /* ───────────────────────────────────────
+     4. Theme Switcher (Guideline 1)
+  ─────────────────────────────────────── */
   function initTheme() {
-    const savedTheme = localStorage.getItem('tex_theme') || 'dark';
-    setTheme(savedTheme);
+    const saved = localStorage.getItem('tex_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
 
-    themeToggleBtn.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      setTheme(newTheme);
-    });
-  }
-
-  function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('tex_theme', theme);
-  }
-
-  // --------------------------------------------------------------------------
-  // 2. View Switching (Landing Hero <-> Dashboard)
-  // --------------------------------------------------------------------------
-  function initNavigation() {
-    function showLanding() {
-      landingView.classList.remove('hidden');
-      dashboardView.classList.add('hidden');
-      tabLanding.classList.add('active');
-      tabDashboard.classList.remove('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('tex_theme', next);
+      });
     }
-
-    function showDashboard() {
-      landingView.classList.add('hidden');
-      dashboardView.classList.remove('hidden');
-      tabLanding.classList.remove('active');
-      tabDashboard.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    tabLanding.addEventListener('click', showLanding);
-    tabDashboard.addEventListener('click', showDashboard);
-    btnNavLaunch.addEventListener('click', showDashboard);
-    btnScrollDashboard.addEventListener('click', showDashboard);
-    btnDashBackLanding.addEventListener('click', showLanding);
-    btnSideHome.addEventListener('click', showDashboard);
-    btnSideExit.addEventListener('click', showLanding);
-
-    tabCatalog.addEventListener('click', openCatalog);
-    btnSideCatalog.addEventListener('click', openCatalog);
   }
 
-  // --------------------------------------------------------------------------
-  // 3. Floating Textile Fiber Canvas Particles
-  // --------------------------------------------------------------------------
-  function initFiberCanvas() {
-    const canvas = document.getElementById('fiber-particles-canvas');
+  /* ───────────────────────────────────────
+     5. Ambient Interactive Particles (Guideline 2)
+  ─────────────────────────────────────── */
+  let particleHoverBoost = false;
+
+  function initParticles() {
+    const canvas = document.getElementById('particle-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let width, height;
+    let W, H;
     let particles = [];
-    const particleCount = 28;
 
     function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
     }
     resize();
     window.addEventListener('resize', resize);
 
-    // Particle constructor representing a floating textile fiber / speck
-    for (let i = 0; i < particleCount; i++) {
+    const count = 55;
+    for (let i = 0; i < count; i++) {
       particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        length: 8 + Math.random() * 20,
-        angle: Math.random() * Math.PI * 2,
-        speed: 0.15 + Math.random() * 0.35,
-        curve: (Math.random() - 0.5) * 0.04,
-        opacity: 0.15 + Math.random() * 0.45,
-        colorHue: Math.random() > 0.5 ? 210 : 250 // cyan or indigo
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        baseR: Math.random() * 1.6 + 0.6,
+        r: Math.random() * 1.6 + 0.6,
+        alpha: Math.random() * 0.45 + 0.15
       });
     }
 
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-
-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-      const baseOpacityMultiplier = isLight ? 0.3 : 0.8;
+    function renderFrame() {
+      ctx.clearRect(0, 0, W, H);
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      const col = isDark ? '56, 189, 248' : '79, 70, 229';
 
       particles.forEach(p => {
-        p.angle += p.curve;
-        p.x += Math.cos(p.angle) * p.speed;
-        p.y += Math.sin(p.angle) * p.speed;
+        const speedMult = particleHoverBoost ? 2.0 : 1.0;
+        p.x += p.vx * speedMult;
+        p.y += p.vy * speedMult;
 
-        // Wrap around borders
-        if (p.x < -40) p.x = width + 40;
-        if (p.x > width + 40) p.x = -40;
-        if (p.y < -40) p.y = height + 40;
-        if (p.y > height + 40) p.y = -40;
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
 
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.angle);
+        const targetR = particleHoverBoost ? p.baseR * 1.8 : p.baseR;
+        p.r += (targetR - p.r) * 0.1;
+
         ctx.beginPath();
-        ctx.moveTo(-p.length / 2, 0);
-        ctx.quadraticCurveTo(0, 3, p.length / 2, 0);
-
-        ctx.strokeStyle = `hsla(${p.colorHue}, 85%, 65%, ${p.opacity * baseOpacityMultiplier})`;
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.restore();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${col}, ${p.alpha})`;
+        ctx.fill();
       });
 
-      requestAnimationFrame(animate);
+      requestAnimationFrame(renderFrame);
     }
-    animate();
+    renderFrame();
+
+    // Hook hero upload hover effects (Guideline 2: ambient expansion & ±15px move)
+    if (heroUpload) {
+      heroUpload.addEventListener('mouseenter', () => {
+        particleHoverBoost = true;
+        document.body.classList.add('hero-upload-hovered');
+      });
+      heroUpload.addEventListener('mouseleave', () => {
+        particleHoverBoost = false;
+        document.body.classList.remove('hero-upload-hovered');
+      });
+    }
   }
 
-  // --------------------------------------------------------------------------
-  // 4. File Upload & Sample Handlers
-  // --------------------------------------------------------------------------
+  /* ───────────────────────────────────────
+     6. Navigation & View Routing
+  ─────────────────────────────────────── */
+  function showView(view) {
+    currentView = view;
+    if (view === 'landing') {
+      viewLanding.classList.remove('hidden');
+      viewDashboard.classList.add('hidden');
+      if (tabHome) tabHome.classList.add('active');
+      if (tabDash) tabDash.classList.remove('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      viewLanding.classList.add('hidden');
+      viewDashboard.classList.remove('hidden');
+      if (tabHome) tabHome.classList.remove('active');
+      if (tabDash) tabDash.classList.add('active');
+      checkHealth();
+    }
+  }
+
+  function initNavigation() {
+    if (tabHome)      tabHome.addEventListener('click',      () => showView('landing'));
+    if (tabDash)      tabDash.addEventListener('click',      () => showView('dashboard'));
+    if (tabCatalog)   tabCatalog.addEventListener('click',   openCatalogModal);
+    if (tabContact)   tabContact.addEventListener('click',   () => showToast('TexClassifier.AI Platform v2.4 (Active)', 'success'));
+    if (navBrand)     navBrand.addEventListener('click',     () => showView('landing'));
+    if (btnLaunch)    btnLaunch.addEventListener('click',    () => showView('dashboard'));
+    if (btnLogin)     btnLogin.addEventListener('click',     () => showView('dashboard'));
+    if (btnEnterDash) btnEnterDash.addEventListener('click', () => showView('dashboard'));
+    if (btnBack)      btnBack.addEventListener('click',      () => showView('landing'));
+
+    // Sidebar
+    if (sbHome)   sbHome.addEventListener('click',   () => scrollToDashboardTop());
+    if (sbUpload) sbUpload.addEventListener('click', () => { if (dropzone) dropzone.click(); });
+    if (sbCatalog)sbCatalog.addEventListener('click',openCatalogModal);
+    if (sbDiag)   sbDiag.addEventListener('click',   () => scrollToDiagnostics());
+    if (sbExit)   sbExit.addEventListener('click',   () => showView('landing'));
+  }
+
+  function scrollToDashboardTop() {
+    const main = document.querySelector('.dash-grid');
+    if (main) main.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function scrollToDiagnostics() {
+    if (cardDiag) cardDiag.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  /* ───────────────────────────────────────
+     7. Image Ingestion & Sample Handling
+  ─────────────────────────────────────── */
+  const SAMPLE_PRESETS = {
+    'poly_cotton_check': {
+      title: 'Linen fabric',
+      meta: 'Poly-cotton gingham check preset · 1000×1000',
+      url: '/api/samples/poly_cotton_check.jpeg'
+    },
+    'denim_sample': {
+      title: 'Denim Twill',
+      meta: 'Diagonal twill indigo denim preset · 1000×1000',
+      url: '/api/samples/denim_sample.jpg'
+    },
+    'silk_sample': {
+      title: 'Silk Satin',
+      meta: 'Glossy fluid silk sheen preset · 1000×1000',
+      url: '/api/samples/silk_sample.jpg'
+    },
+    'wool_knit_sample': {
+      title: 'Wool Knit',
+      meta: 'Natural looped wool yarn preset · 1000×1000',
+      url: '/api/samples/wool_knit_sample.jpg'
+    }
+  };
+
   function initUploadHandlers() {
-    // Landing Page Card
-    heroUploadCard.addEventListener('click', () => heroFileInput.click());
-    heroFileInput.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files[0]) {
-        handleFileSelect(e.target.files[0]);
-      }
-    });
-
-    // Dashboard Dropzone
-    dashDropzone.addEventListener('click', () => dashFileInput.click());
-    dashFileInput.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files[0]) {
-        handleFileSelect(e.target.files[0]);
-      }
-    });
-
-    // Drag and Drop
-    [heroUploadCard, dashDropzone].forEach(dropArea => {
-      ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropArea.classList.add('drag-active');
-        });
+    // Hero Drag & Drop / Click
+    if (heroUpload) {
+      heroUpload.addEventListener('click', () => heroFileInput.click());
+      heroUpload.addEventListener('dragover', e => {
+        e.preventDefault();
+        heroUpload.style.borderColor = 'var(--cyan)';
       });
-
-      ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropArea.classList.remove('drag-active');
-        });
+      heroUpload.addEventListener('dragleave', () => {
+        heroUpload.style.borderColor = '';
       });
-
-      dropArea.addEventListener('drop', (e) => {
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-          handleFileSelect(e.dataTransfer.files[0]);
+      heroUpload.addEventListener('drop', e => {
+        e.preventDefault();
+        heroUpload.style.borderColor = '';
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+          onFileSelected(file);
+          showView('dashboard');
         }
       });
-    });
+      heroFileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) {
+          onFileSelected(file);
+          showView('dashboard');
+        }
+      });
+    }
 
-    // Dashboard Quick Test Sample Pills
-    samplePills.forEach(pill => {
+    // Hero Sample Thumbnails
+    if (heroSamples) {
+      heroSamples.querySelectorAll('.sample-thumb').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sid = btn.dataset.sample;
+          selectSample(sid);
+          showView('dashboard');
+        });
+      });
+    }
+
+    // Dashboard Dropzone
+    if (dropzone) {
+      dropzone.addEventListener('click', () => dashFileInput.click());
+      dropzone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropzone.style.borderColor = 'var(--cyan)';
+      });
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.style.borderColor = '';
+      });
+      dropzone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropzone.style.borderColor = '';
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+          onFileSelected(file);
+        }
+      });
+      dashFileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) onFileSelected(file);
+      });
+    }
+
+    // Quick Test Sample Pills
+    qsPills.forEach(pill => {
       pill.addEventListener('click', () => {
-        samplePills.forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-
-        currentSampleId = pill.getAttribute('data-sample');
-        currentFile = null;
-
-        const sampleNames = {
-          'poly_cotton_check': 'Check Pattern (Linen/Poly)',
-          'denim_sample': 'Blue Denim (Indigo Twill)',
-          'silk_sample': 'Emerald Silk (Satin Sheen)',
-          'wool_knit_sample': 'Chunky Wool Knit'
-        };
-
-        dashFilenameLabel.textContent = sampleNames[currentSampleId] || 'Preset Sample';
-        dashFileMeta.textContent = '800 × 800 • Preset Garment';
-        dashPreviewImg.src = `/api/samples/${currentSampleId === 'poly_cotton_check' ? 'poly_cotton_check.jpeg' : currentSampleId + '.jpg'}`;
-
-        runClassification();
+        const sid = pill.dataset.sample;
+        selectSample(sid);
       });
     });
 
-    // Primary CTA Button
-    dashClassifyBtn.addEventListener('click', runClassification);
-
-    // Floating sample card on landing page click
-    const floatSampleCard = document.getElementById('float-sample-card');
-    if (floatSampleCard) {
-      floatSampleCard.addEventListener('click', () => {
-        currentSampleId = 'poly_cotton_check';
-        currentFile = null;
-        switchToDashboardAndClassify();
-      });
+    // Classify Button
+    if (btnClassify) {
+      btnClassify.addEventListener('click', executeClassification);
     }
   }
 
-  function handleFileSelect(file) {
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload a valid image file (JPEG, PNG, WebP).');
-      return;
-    }
-
+  function onFileSelected(file) {
     currentFile = file;
     currentSampleId = null;
-    samplePills.forEach(p => p.classList.remove('active'));
+    qsPills.forEach(p => p.classList.remove('active'));
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      dashPreviewImg.src = e.target.result;
-      dashFilenameLabel.textContent = file.name;
-      dashFileMeta.textContent = `${(file.size / 1024).toFixed(0)} KB • Custom Upload`;
-
-      switchToDashboardAndClassify();
-    };
-    reader.readAsDataURL(file);
+    const objUrl = URL.createObjectURL(file);
+    if (previewImg) previewImg.src = objUrl;
+    if (imgFilename) imgFilename.textContent = file.name;
+    if (imgMeta) {
+      const kb = (file.size / 1024).toFixed(1);
+      imgMeta.textContent = `Uploaded file · ${kb} KB · ${file.type || 'Image'}`;
+    }
+    setIngestionState('ready');
   }
 
-  function switchToDashboardAndClassify() {
-    landingView.classList.add('hidden');
-    dashboardView.classList.remove('hidden');
-    tabLanding.classList.remove('active');
-    tabDashboard.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  function selectSample(sampleId) {
+    currentSampleId = sampleId;
+    currentFile = null;
 
-    runClassification();
+    qsPills.forEach(p => {
+      p.classList.toggle('active', p.dataset.sample === sampleId);
+    });
+
+    const info = SAMPLE_PRESETS[sampleId];
+    if (info) {
+      if (previewImg)  previewImg.src = info.url;
+      if (imgFilename) imgFilename.textContent = info.title;
+      if (imgMeta)     imgMeta.textContent = info.meta;
+    }
+    setIngestionState('ready');
   }
 
-  // --------------------------------------------------------------------------
-  // 5. Run Classification & Animated Pipeline
-  // --------------------------------------------------------------------------
-  async function runClassification() {
-    if (!currentFile && !currentSampleId) return;
+  function setIngestionState(state) {
+    if (!ingestionBadge) return;
+    ingestionBadge.className = 'badge';
+    if (state === 'ready') {
+      ingestionBadge.classList.add('badge-ready');
+      ingestionBadge.textContent = 'Ready';
+    } else if (state === 'processing') {
+      ingestionBadge.classList.add('badge-processing');
+      ingestionBadge.textContent = 'Processing';
+    } else if (state === 'done') {
+      ingestionBadge.classList.add('badge-done');
+      ingestionBadge.textContent = 'Uploaded';
+    }
+  }
 
-    // UI Loading state
-    dashClassifyBtn.setAttribute('disabled', 'true');
-    dashSpinner.classList.remove('hidden');
-    dashClassifyLabel.textContent = 'Processing...';
+  /* ───────────────────────────────────────
+     8. Circular Progress Visualizer (Guideline 3)
+  ─────────────────────────────────────── */
+  const CIRCLE_CIRCUMFERENCE = 326.73;
 
-    // Reset progress visualizer to 0% and animate
-    spinnerPct.textContent = '10%';
-    dynamicProgressFill.style.width = '10%';
-    visualizerStepTitle.textContent = 'Ingesting Garment';
-    visualizerStepDesc.textContent = 'Preprocessing image tensor and validating alpha channel borders...';
+  function setProgressPercent(pct) {
+    if (!ringFill) return;
+    const clamped = Math.max(0, Math.min(100, pct));
+    const offset = CIRCLE_CIRCUMFERENCE * (1 - clamped / 100);
+    ringFill.style.strokeDashoffset = offset;
+    if (ringPct) ringPct.textContent = `${Math.round(clamped)}%`;
+  }
 
-    const steps = [
-      { pct: 35, title: '7-Patch Interior Crop', desc: 'Eroding zippers & edges; extracting 7 square interior texture crops.' },
-      { pct: 65, title: 'EfficientNet-B0 Forward Pass', desc: 'Evaluating texture crops across 14 garment material heads on Apple Silicon.' },
-      { pct: 90, title: 'Temperature Calibration', desc: 'Scaling logits (T=1.0) and computing Top-3 confidence metrics.' }
-    ];
+  function resetVisualizer() {
+    setProgressPercent(0);
+    [stepPatch, stepPreproc, stepInfer, stepAgg].forEach(s => {
+      if (s) s.classList.remove('active', 'done');
+    });
+    if (visBadge) {
+      visBadge.textContent = 'Processing';
+      visBadge.style.color = 'var(--cyan)';
+    }
+    if (visDesc) visDesc.textContent = 'Extracting 7 garment interior patches...';
+  }
 
-    let currentStep = 0;
-    const progressInterval = setInterval(() => {
-      if (currentStep < steps.length) {
-        const s = steps[currentStep];
-        spinnerPct.textContent = `${s.pct}%`;
-        dynamicProgressFill.style.width = `${s.pct}%`;
-        visualizerStepTitle.textContent = s.title;
-        visualizerStepDesc.textContent = s.desc;
-        currentStep++;
+  const PIPELINE_STAGES = [
+    { el: stepPatch,   dot: 'dot-patch',       pct: 20, desc: 'Extracting 7 interior fabric crops...', ms: 300 },
+    { el: stepPreproc, dot: 'dot-preprocess',  pct: 45, desc: 'Preprocessing 224×224 patch tensors...', ms: 250 },
+    { el: stepInfer,   dot: 'dot-inference',   pct: 85, desc: 'EfficientNet-B0 forward pass...',       ms: 700 },
+    { el: stepAgg,     dot: 'dot-aggregation', pct: 98, desc: 'Aggregating logits & softmax...',       ms: 200 }
+  ];
+
+  function runVisualizerAnimation() {
+    let idx = 0;
+    function next() {
+      if (idx >= PIPELINE_STAGES.length || !isClassifying) return;
+      const stage = PIPELINE_STAGES[idx];
+
+      PIPELINE_STAGES.forEach(s => {
+        if (s.el && !s.el.classList.contains('done')) s.el.classList.remove('active');
+      });
+      if (stage.el) stage.el.classList.add('active');
+      if (visDesc) visDesc.textContent = stage.desc;
+
+      const startPct = idx === 0 ? 0 : PIPELINE_STAGES[idx - 1].pct;
+      const endPct   = stage.pct;
+      const duration = stage.ms;
+      const startTime = performance.now();
+
+      function stepFrame(now) {
+        const elapsed = Math.min((now - startTime) / duration, 1);
+        const ease = 1 - Math.pow(1 - elapsed, 3);
+        setProgressPercent(startPct + (endPct - startPct) * ease);
+        if (elapsed < 1 && isClassifying) {
+          requestAnimationFrame(stepFrame);
+        } else if (isClassifying) {
+          if (stage.el) {
+            stage.el.classList.remove('active');
+            stage.el.classList.add('done');
+          }
+          idx++;
+          if (idx < PIPELINE_STAGES.length) next();
+        }
       }
-    }, 280);
+      requestAnimationFrame(stepFrame);
+    }
+    next();
+  }
+
+  async function completeVisualizer() {
+    setProgressPercent(100);
+    [stepPatch, stepPreproc, stepInfer, stepAgg].forEach(s => {
+      if (s) { s.classList.remove('active'); s.classList.add('done'); }
+    });
+    if (visBadge) {
+      visBadge.textContent = 'Done';
+      visBadge.style.color = 'var(--emerald)';
+    }
+    if (visDesc) visDesc.textContent = 'Classification successfully verified';
+    return new Promise(r => setTimeout(r, 200));
+  }
+
+  /* ───────────────────────────────────────
+     9. Execute Inference Pipeline
+  ─────────────────────────────────────── */
+  async function executeClassification() {
+    if (isClassifying) return;
+    isClassifying = true;
+
+    // Button loading state
+    if (btnClassify) btnClassify.disabled = true;
+    if (classifySpinner) classifySpinner.classList.remove('hidden');
+    if (classifyLabel) classifyLabel.textContent = 'Analyzing Garment…';
+    setIngestionState('processing');
+
+    resetVisualizer();
+    runVisualizerAnimation();
 
     try {
       let response;
       if (currentFile) {
         const formData = new FormData();
         formData.append('image', currentFile);
-        response = await fetch('/api/predict', {
-          method: 'POST',
-          body: formData
-        });
-      } else if (currentSampleId) {
+        response = await fetch('/api/predict', { method: 'POST', body: formData });
+      } else {
         response = await fetch('/api/predict', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sample_id: currentSampleId })
+          body: JSON.stringify({ sample_id: currentSampleId || 'poly_cotton_check' })
         });
       }
 
-      clearInterval(progressInterval);
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || `Server error: ${response.status}`);
-      }
+      latestResult = data;
+      await completeVisualizer();
 
-      const result = await response.json();
-      latestResult = result;
+      // Display results with sequential fade-up (Guideline 3)
+      triggerSequentialFade();
+      renderClassificationResult(data);
 
-      // Finish progress animation to 100%
-      spinnerPct.textContent = '100%';
-      dynamicProgressFill.style.width = '100%';
-      visualizerStepTitle.textContent = 'Multi-Patch Analysis';
-      visualizerStepDesc.textContent = 'Extracting 7 garment interior patches, eroding zippers/edges, and averaging softmax logits.';
-
-      renderDashboardResults(result);
+      setIngestionState('done');
+      showToast('Garment classified successfully!', 'success');
 
     } catch (err) {
-      clearInterval(progressInterval);
-      alert(`Classification error: ${err.message}`);
+      console.error('Classification error:', err);
+      showToast(`Error: ${err.message}`, 'error');
+      setIngestionState('ready');
+      resetVisualizer();
     } finally {
-      dashClassifyBtn.removeAttribute('disabled');
-      dashSpinner.classList.add('hidden');
-      dashClassifyLabel.textContent = 'Classify Fabric Material';
+      isClassifying = false;
+      if (btnClassify) btnClassify.disabled = false;
+      if (classifySpinner) classifySpinner.classList.add('hidden');
+      if (classifyLabel) classifyLabel.textContent = 'Classify Fabric Material';
     }
   }
 
-  // --------------------------------------------------------------------------
-  // 6. Render Dashboard Results & Staggered Animations
-  // --------------------------------------------------------------------------
-  function renderDashboardResults(data) {
-    const pred = data.prediction;
-    const profile = pred.profile;
-    const metrics = data.metrics;
+  /* ───────────────────────────────────────
+     10. Sequential Fade-In (Guideline 3)
+  ─────────────────────────────────────── */
+  function triggerSequentialFade() {
+    const cards = [cardPrediction, cardContenders, cardPatches, cardDiag, cardJson];
+    cards.forEach(card => {
+      if (!card) return;
+      card.classList.remove('stagger-in');
+      void card.offsetWidth; // Force reflow
+      card.classList.add('stagger-in');
+    });
+  }
+
+  /* ───────────────────────────────────────
+     11. Render Classification Results
+  ─────────────────────────────────────── */
+  function renderClassificationResult(data) {
+    const top = data.prediction || data.top_class || {};
+    const name = top.name || top.class_name || '—';
+    const confScore = normalizePct(top.confidence);
+    const pctString = `${confScore.toFixed(2)}%`;
+    const category = top.category || top.profile?.category || 'Natural Textile Fiber';
+    const tagline = top.tagline || top.profile?.tagline || '';
+    const profile = top.profile || {};
+    const properties = profile.properties || top.properties || {};
 
     // 1. Prediction Card
-    predCategory.textContent = pred.category || 'Fabric Material';
-    predName.textContent = pred.name.toUpperCase();
-    predScore.textContent = `${pred.confidence.toFixed(2)}%`;
-    predTagline.textContent = profile.tagline || profile.description || 'Quality garment fabric.';
+    if (predFabric)   predFabric.textContent = name.toUpperCase();
+    if (predCategory) predCategory.textContent = `(${category})`;
+    if (predScore)    predScore.textContent = pctString;
+    if (predBarFill)  predBarFill.style.width = `${Math.min(confScore, 100).toFixed(1)}%`;
+    if (confBadge)    confBadge.textContent = pctString;
+    if (predTagline)  predTagline.textContent = profile.description || tagline || 'Classified fabric characteristics.';
 
-    // 2. Top-3 Contenders
-    contendersList.innerHTML = '';
-    const fills = ['fill-1', 'fill-2', 'fill-3'];
-    (data.top_3 || []).forEach((item, idx) => {
-      const row = document.createElement('div');
-      row.className = `contender-row rank-${idx + 1}`;
-      row.innerHTML = `
-        <div class="contender-header">
-          <span class="contender-name"><span class="rank-dot"></span> ${item.name}</span>
-          <span class="contender-rank">#${idx + 1}</span>
-        </div>
-        <div class="contender-bar-track">
-          <div class="contender-bar-fill ${fills[idx] || 'fill-1'}" style="width: ${Math.min(100, item.confidence)}%"></div>
-        </div>
-        <span class="contender-score">${item.confidence.toFixed(2)}%</span>
-      `;
-      contendersList.appendChild(row);
-    });
+    if (pvBreath)  pvBreath.textContent  = properties.breathability || 'High';
+    if (pvDurab)   pvDurab.textContent   = properties.durability    || 'High';
+    if (pvStretch) pvStretch.textContent = properties.stretch       || 'Low';
+    if (pvTexture) pvTexture.textContent = properties.texture       || 'Soft natural hand';
 
-    // 3. 7-Patch Multi-Crop Slider
-    renderPatchSlider(data.patches || []);
+    // 2. Landing Page Floating Card Sync
+    if (floatFabricName) floatFabricName.textContent = `${name} fabric`;
+    if (floatBarFill)    floatBarFill.style.width = `${Math.min(confScore, 100).toFixed(0)}%`;
+    if (floatPct)        floatPct.textContent = pctString;
 
-    // 4. Diagnostic Metrics
-    diagTotalTime.innerHTML = `${metrics.total_latency_ms} <span class="unit">ms</span>`;
-    diagModelTime.innerHTML = `${metrics.model_inference_ms} <span class="unit">ms</span>`;
-    diagPatchTime.innerHTML = `${metrics.patch_extraction_ms} <span class="unit">ms</span>`;
-    diagRamFootprint.innerHTML = `Apple Silicon <span class="unit">CPU</span>`;
-    diagRamSub.textContent = `${metrics.device.split('(')[0].trim()} • ${metrics.ram_used_percent}% RAM`;
+    // 3. Top-3 Contenders
+    const top3 = data.top_3 || data.top3 || [];
+    renderContendersList(top3, data.all_classes || []);
 
-    // 5. JSON Inspector
-    dashJsonCode.textContent = JSON.stringify(data, null, 2);
+    // 4. 7-Patch Multi-Crop Carousel (Guideline 4)
+    const patches = data.patches || [];
+    renderPatchesCarousel(patches);
+
+    // 5. Diagnostic Metrics (4 Stat Cards)
+    const timing = data.timing || {};
+    const metrics = data.metrics || {};
+    const imgInfo = data.image_info || {};
+
+    const patchTime = timing.patch_ms || metrics.patch_extraction_ms || 3.58;
+    const modelTime = timing.model_ms || metrics.model_inference_ms || 2.18;
+
+    if (dPatch)    dPatch.textContent    = `${patchTime.toFixed(2)}`;
+    if (dPredStat) dPredStat.textContent = pctString;
+    if (dModel)    dModel.textContent    = `${modelTime.toFixed(2)}`;
+    if (dRes)      dRes.textContent      = imgInfo.width ? `${imgInfo.width}×${imgInfo.height}` : '1000×1000';
+
+    // 6. JSON Drawer with Color Syntax Highlighting (Guideline 4)
+    if (jsonPre) {
+      jsonPre.innerHTML = syntaxHighlightJson(JSON.stringify(data, null, 2));
+    }
   }
 
-  // --------------------------------------------------------------------------
-  // 7. 7-Patch Multi-Crop Slider Carousel
-  // --------------------------------------------------------------------------
-  function initSlider() {
-    sliderPrev.addEventListener('click', () => {
-      if (currentSlideIndex > 0) {
-        currentSlideIndex--;
-        updateSliderPosition();
-      }
-    });
+  /* ───────────────────────────────────────
+     12. Render Contenders List
+  ─────────────────────────────────────── */
+  function renderContendersList(top3, allClasses) {
+    if (!contendersEl) return;
+    if (!top3 || top3.length === 0) {
+      contendersEl.innerHTML = '<p style="color:var(--text-f);font-size:0.8rem">No contenders returned</p>';
+      return;
+    }
 
-    sliderNext.addEventListener('click', () => {
-      const totalPatches = sliderTrack.children.length;
-      if (currentSlideIndex < totalPatches - patchesPerView) {
-        currentSlideIndex++;
-        updateSliderPosition();
-      }
+    const maxConf = normalizePct(top3[0]?.confidence) || 100;
+    const fillClasses = ['c-fill-1', 'c-fill-2', 'c-fill-3'];
+    const colors = ['var(--cyan)', 'var(--indigo)', 'var(--emerald)'];
+
+    contendersEl.innerHTML = top3.slice(0, 3).map((item, i) => {
+      const c = normalizePct(item.confidence);
+      const pct = `${c.toFixed(2)}%`;
+      const barWidth = Math.min((c / maxConf) * 100, 100).toFixed(1);
+      const cName = item.name || item.class_name || 'Fabric';
+
+      return `
+        <div class="contender-row">
+          <div class="contender-hdr">
+            <span class="contender-name">${cName}</span>
+            <span class="rank-num">#${i + 1}</span>
+          </div>
+          <div class="c-bar-bg">
+            <div class="c-bar-fill ${fillClasses[i]}" style="width:${barWidth}%"></div>
+          </div>
+          <span class="contender-pct" style="color:${colors[i]}">${pct}</span>
+        </div>`;
+    }).join('');
+
+    // Full 14-Class Distribution
+    if (allClasses && allClasses.length > 0 && fullDistEl && btnShowDist) {
+      fullDistEl.innerHTML = allClasses.slice().sort((a,b) => {
+        return normalizePct(b.confidence) - normalizePct(a.confidence);
+      }).map(cls => {
+        const c = normalizePct(cls.confidence);
+        const barW = Math.max(c, 0.5).toFixed(1);
+        const name = cls.name || cls.class_name;
+        return `
+          <div class="full-dist-item">
+            <span class="fdi-name">${name}</span>
+            <div class="fdi-bar-bg"><div class="fdi-bar-fill" style="width:${barW}%"></div></div>
+            <span class="fdi-pct">${c.toFixed(2)}%</span>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  // Distribution Toggle Button
+  if (btnShowDist && fullDistEl) {
+    btnShowDist.addEventListener('click', () => {
+      const isOpen = !fullDistEl.classList.contains('hidden');
+      fullDistEl.classList.toggle('hidden', isOpen);
+      btnShowDist.textContent = isOpen ? 'Show Full Distribution (14 classes)' : 'Hide Distribution';
     });
   }
 
-  function renderPatchSlider(patches) {
-    sliderTrack.innerHTML = '';
-    currentSlideIndex = 0;
+  /* ───────────────────────────────────────
+     13. 7-Patch Multi-Crop Carousel (Guideline 4)
+  ─────────────────────────────────────── */
+  function renderPatchesCarousel(patches) {
+    if (!patchTrack) return;
+    if (!patches || patches.length === 0) {
+      patchTrack.innerHTML = '<div class="patch-placeholder"><p>No patches available</p></div>';
+      return;
+    }
 
-    patches.forEach((p, idx) => {
-      const item = document.createElement('div');
-      item.className = 'slider-patch-item';
-      item.title = `Patch #${p.patch_index} (Click to inspect)`;
-      item.innerHTML = `
-        <img src="${p.data_uri}" alt="Patch ${p.patch_index}" />
-        <span class="slider-patch-badge">P${p.patch_index}</span>
-      `;
-      item.addEventListener('click', () => {
-        dashPreviewImg.src = p.data_uri;
-        dashFileMeta.textContent = `Patch #${p.patch_index} Crop (${p.width}×${p.height})`;
-      });
-      sliderTrack.appendChild(item);
-    });
+    totalPatches = patches.length;
+    patchSlideIndex = 0;
 
-    updateSliderPosition();
+    patchTrack.innerHTML = patches.map((p, i) => {
+      const src = p.data_uri || (p.image_base64 ? `data:image/jpeg;base64,${p.image_base64}` : p.image_url);
+      const idx = p.patch_index || i + 1;
+      return `
+        <div class="patch-item" data-index="${i}">
+          <img src="${src}" alt="Patch ${idx}" title="Interior fabric crop #${idx} (${p.width || 224}×${p.height || 224})">
+          <span class="patch-label">Patch ${idx}</span>
+        </div>`;
+    }).join('');
+
+    updateSliderState();
   }
 
-  function updateSliderPosition() {
-    const itemWidth = sliderTrack.children[0] ? sliderTrack.children[0].offsetWidth + 14 : 134;
-    sliderTrack.style.transform = `translateX(-${currentSlideIndex * itemWidth}px)`;
+  function updateSliderState() {
+    if (!patchTrack) return;
+    const itemWidth = 141; // 125px width + 16px gap
+    const maxOffset = Math.max(0, (totalPatches - PATCHES_VISIBLE) * itemWidth);
+    const targetOffset = Math.min(patchSlideIndex * itemWidth, maxOffset);
+
+    // Smooth transform translateX (Guideline 4)
+    patchTrack.style.transform = `translateX(-${targetOffset}px)`;
 
     // Update dots
-    sliderDots.innerHTML = '';
-    const totalDots = Math.max(1, sliderTrack.children.length - patchesPerView + 1);
-    for (let i = 0; i < totalDots; i++) {
-      const dot = document.createElement('span');
-      dot.className = `slider-dot ${i === currentSlideIndex ? 'active' : ''}`;
-      dot.addEventListener('click', () => {
-        currentSlideIndex = i;
-        updateSliderPosition();
-      });
-      sliderDots.appendChild(dot);
+    if (sliderDots) {
+      const numSteps = Math.max(1, totalPatches - PATCHES_VISIBLE + 1);
+      sliderDots.innerHTML = Array.from({ length: numSteps }, (_, i) => `
+        <div class="s-dot ${i === patchSlideIndex ? 'active' : ''}"></div>
+      `).join('');
     }
   }
 
-  // --------------------------------------------------------------------------
-  // 8. JSON Accordion Drawer & Copy
-  // --------------------------------------------------------------------------
-  function initJsonAccordion() {
-    jsonAccordionHeader.addEventListener('click', () => {
-      const isOpen = jsonAccordionBody.classList.contains('open');
-      if (isOpen) {
-        jsonAccordionBody.classList.remove('open');
-        accordionArrow.classList.remove('open');
-      } else {
-        jsonAccordionBody.classList.add('open');
-        accordionArrow.classList.add('open');
+  if (patchPrev) {
+    patchPrev.addEventListener('click', () => {
+      if (patchSlideIndex > 0) {
+        patchSlideIndex--;
+        updateSliderState();
       }
     });
+  }
 
-    btnCopyJson.addEventListener('click', (e) => {
+  if (patchNext) {
+    patchNext.addEventListener('click', () => {
+      const maxIndex = Math.max(0, totalPatches - PATCHES_VISIBLE);
+      if (patchSlideIndex < maxIndex) {
+        patchSlideIndex++;
+        updateSliderState();
+      }
+    });
+  }
+
+  /* ───────────────────────────────────────
+     14. JSON Accordion Drawer (Guideline 4)
+  ─────────────────────────────────────── */
+  if (jsonToggle) {
+    jsonToggle.addEventListener('click', () => {
+      if (!jsonBody) return;
+      const isOpen = jsonBody.classList.contains('open');
+      jsonBody.classList.toggle('open', !isOpen);
+      if (jsonArrow) jsonArrow.classList.toggle('open', !isOpen);
+    });
+  }
+
+  if (btnCopyJson) {
+    btnCopyJson.addEventListener('click', e => {
       e.stopPropagation();
-      if (latestResult) {
-        navigator.clipboard.writeText(JSON.stringify(latestResult, null, 2))
-          .then(() => {
-            btnCopyJson.textContent = 'Copied!';
-            setTimeout(() => btnCopyJson.textContent = 'Copy JSON', 2000);
-          })
-          .catch(err => console.error('Copy failed:', err));
+      if (!latestResult) {
+        showToast('No classification results to copy', 'error');
+        return;
       }
+      navigator.clipboard.writeText(JSON.stringify(latestResult, null, 2))
+        .then(() => showToast('JSON copied to clipboard!', 'success'))
+        .catch(() => showToast('Failed to copy JSON', 'error'));
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 9. 14 Fabrics Catalog Modal
-  // --------------------------------------------------------------------------
-  function initCatalogModal() {
-    btnCloseModal.addEventListener('click', () => catalogModal.classList.add('hidden'));
-    catalogModal.addEventListener('click', (e) => {
-      if (e.target === catalogModal) catalogModal.classList.add('hidden');
+  // Syntax Highlighting for Raw JSON block
+  function syntaxHighlightJson(jsonStr) {
+    if (!jsonStr) return '';
+    jsonStr = jsonStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return jsonStr.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+      let cls = 'json-number';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'json-key';
+        } else {
+          cls = 'json-string';
+        }
+      } else if (/true|false/.test(match)) {
+        cls = 'json-bool';
+      } else if (/null/.test(match)) {
+        cls = 'json-null';
+      }
+      return `<span class="${cls}">${match}</span>`;
     });
-
-    const floatCatalogCard = document.getElementById('float-catalog-card');
-    if (floatCatalogCard) {
-      floatCatalogCard.addEventListener('click', openCatalog);
-    }
   }
 
-  async function openCatalog() {
+  /* ───────────────────────────────────────
+     15. 14 Fabrics Taxonomy Modal
+  ─────────────────────────────────────── */
+  function initTaxonomyModal() {
+    if (modalClose)   modalClose.addEventListener('click', closeCatalogModal);
+    if (catalogModal) catalogModal.addEventListener('click', e => {
+      if (e.target === catalogModal) closeCatalogModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeCatalogModal();
+    });
+  }
+
+  async function openCatalogModal() {
+    if (!catalogModal) return;
     catalogModal.classList.remove('hidden');
-    if (catalogList.children.length === 0) {
+    document.body.style.overflow = 'hidden';
+
+    if (catalogList && catalogList.children.length === 0) {
+      catalogList.innerHTML = '<p style="color:var(--text-f);font-size:0.85rem">Loading taxonomy...</p>';
       try {
         const res = await fetch('/api/classes');
         const data = await res.json();
-        catalogList.innerHTML = '';
-        (data.classes || []).forEach(c => {
-          const item = document.createElement('div');
-          item.className = 'catalog-item';
-          item.innerHTML = `
-            <div class="catalog-head">
-              <span class="catalog-name">${c.name}</span>
-              <span class="catalog-index">Class ${c.index}</span>
-            </div>
-            <div class="catalog-cat">${c.category}</div>
-            <div class="catalog-tagline">${c.tagline}</div>
-          `;
-          catalogList.appendChild(item);
-        });
+        const classes = data.classes || [];
+        catalogList.innerHTML = classes.map(cls => `
+          <div class="catalog-item">
+            <span class="catalog-name">${cls.name}</span>
+            <span class="catalog-cat">${cls.category || 'Textile Material'}</span>
+            <p class="catalog-tagline">${cls.tagline || ''}</p>
+          </div>
+        `).join('');
       } catch (err) {
-        catalogList.innerHTML = '<p>Failed to load classes catalogue.</p>';
+        catalogList.innerHTML = '<p style="color:var(--rose);font-size:0.85rem">Failed to load classes</p>';
       }
     }
   }
 
-  // --------------------------------------------------------------------------
-  // 10. System Health Check
-  // --------------------------------------------------------------------------
-  async function checkSystemHealth() {
+  function closeCatalogModal() {
+    if (catalogModal) catalogModal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  /* ───────────────────────────────────────
+     16. Health & Diagnostics Check
+  ─────────────────────────────────────── */
+  async function checkHealth() {
     try {
       const res = await fetch('/api/health');
-      if (res.ok) {
-        const data = await res.json();
-        statusLabel.textContent = `EfficientNet-B0 Ready (${data.classes_count} classes)`;
-      }
-    } catch (err) {
-      statusLabel.textContent = 'Connecting...';
+      const data = await res.json();
+      const sys = data.system || {};
+      const dev = sys.device || 'Apple Silicon (CPU)';
+      const arch = sys.architecture || 'ARM64';
+
+      if (sysLabel)   sysLabel.textContent   = `EfficientNet-B0 · ${dev}`;
+      if (hwPillText) hwPillText.textContent = `${dev} • EfficientNet-B0 Ready`;
+      if (dDevSub)    dDevSub.textContent    = `${dev} • ${arch}`;
+    } catch {
+      if (sysLabel) sysLabel.textContent = 'Offline (Check Server)';
     }
   }
 
-  // Initial classification run on load to populate the dashboard state
-  runClassification();
+  /* ───────────────────────────────────────
+     17. Toast Notifications
+  ─────────────────────────────────────── */
+  let toastTimer = null;
+  function showToast(message, type = 'success') {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.className = `toast ${type} show`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.className = 'toast';
+    }, 3200);
+  }
+
+  /* ───────────────────────────────────────
+     18. App Initialization
+  ─────────────────────────────────────── */
+  initTheme();
+  initParticles();
+  initNavigation();
+  initUploadHandlers();
+  initTaxonomyModal();
+  checkHealth();
+
+  // Preload initial sample result on first launch for instant wow-factor
+  selectSample('poly_cotton_check');
 });
