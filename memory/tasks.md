@@ -18,6 +18,7 @@
 | **TASK-001** | Train 14-Class Classifier to Target Accuracy | `paused` | `backend/fabric_classifier/` | 2026-10-13 | [Details](#task-001) | No trainer running (server restart); Att 309 policy-stopped, Att 310 interrupted after Ep 5 with no gain; best val Macro-F1 40.37% (Att 309 Ep 13); blocked by [BUG-001](file:///c:/Users/A0SKZ/STORE/ALL_CODE/BUISINESS/Clothes_Machine_Learning/memory/records/BUG-001-polyester-weak-recall.md) |
 | **TASK-002** | Temperature Calibration & Inference Contract Test | `todo` | `backend/fabric_classifier/calibration/` | 2026-10-11 | [Details](#task-002) | Blocked on TASK-001 final weights |
 | **TASK-003** | Resolve Polyester & Smooth Fabric Recall Deficit | `in_progress` | Loss / Augmentation / Training | 2026-10-14 | [Details](#task-003) | Worst recall 15.44% val at Att 309 stop, 9.6-14.0% in Att 310; still <20%; focal loss planned, not tried; nothing running |
+| **TASK-004** | Web Frontend & Inference API Integration | `done` | `backend/`, `templates/`, `static/` | 2026-10-20 | [Details](#task-004) | Fully operational Mac-optimized web application running on port 5050; supports file upload, one-click samples, 7-patch visual inspector, live metrics, top-3 podium, 14-class spectrum |
 
 ---
 
@@ -87,3 +88,20 @@
 - **Next Action** (planned): With user approval, implement class-weighted focal loss in `train.py` as a single isolated change and record it as a new `planned` EXP record first (spec: BUG-001 "Unexplored Mitigations").
 - **Supporting Records**: [BUG-001](file:///c:/Users/A0SKZ/STORE/ALL_CODE/BUISINESS/Clothes_Machine_Learning/memory/records/BUG-001-polyester-weak-recall.md), [EXP-309](file:///c:/Users/A0SKZ/STORE/ALL_CODE/BUISINESS/Clothes_Machine_Learning/memory/records/EXP-309-expanded-dataset-in-flight.md), [EXP-310](file:///c:/Users/A0SKZ/STORE/ALL_CODE/BUISINESS/Clothes_Machine_Learning/memory/records/EXP-310-warm-start-interrupted.md).
 - **Last Update**: 2026-10-14 04:50
+
+### <a id="task-004"></a>TASK-004: Web Frontend & Inference API Integration
+- **Requirement / Source**: User request (2026-10-20): Add front end where an image can be uploaded and returns metrics and the final prediction using the already trained model on Mac.
+- **Status**: `done`
+- **Completion Criteria**:
+  - Full-stack web application combining Flask REST backend and responsive Single Page Application UI.
+  - Native Apple Silicon Mac execution with low-resource footprint (<200MB memory).
+  - Drag-and-drop file ingestion supporting JPEG, PNG, and WebP.
+  - Pre-loaded one-click sample suite (poly-cotton check, denim twill, silk satin, wool knit).
+  - Live prediction metrics: total latency (ms), patch extraction (ms), forward pass (ms), device & RAM diagnostics.
+  - Top-1 winner card with fabric profile (breathability, durability, stretch, texture, care instructions).
+  - Top-3 podium cards with confidence progress bars adhering to inference contract.
+  - 7-patch multi-crop texture visual inspector displaying base64 thumbnails of extracted interior fabric regions.
+  - Complete 14-class probability spectrum breakdown.
+  - Developer JSON inspection drawer with copy-to-clipboard.
+- **Evidence of Completion**: Verified end-to-end with curl and direct python test suite; server running actively on `http://127.0.0.1:5050`.
+- **Last Update**: 2026-10-20 20:17
