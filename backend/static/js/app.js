@@ -41,12 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroSamples   = document.getElementById('hero-sample-thumbs');
   const btnEnterDash  = document.getElementById('btn-enter-dashboard');
 
-  // Floating Cards
-  const floatFabricName = document.getElementById('float-fabric-name');
-  const floatBarFill    = document.getElementById('float-bar-fill');
-  const floatPct        = document.getElementById('float-pct');
-  const hwPillText      = document.getElementById('hw-pill-text');
-
   // Dashboard Sidebar & Header
   const sbHome        = document.getElementById('sb-home');
   const sbUpload      = document.getElementById('sb-upload');
@@ -601,12 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pvStretch) pvStretch.textContent = properties.stretch       || 'Low';
     if (pvTexture) pvTexture.textContent = properties.texture       || 'Soft natural hand';
 
-    // 2. Landing Page Floating Card Sync
-    if (floatFabricName) floatFabricName.textContent = `${name} fabric`;
-    if (floatBarFill)    floatBarFill.style.width = `${Math.min(confScore, 100).toFixed(0)}%`;
-    if (floatPct)        floatPct.textContent = pctString;
-
-    // 3. Top-3 Contenders
+    // 2. Top-3 Contenders
     const top3 = data.top_3 || data.top3 || [];
     renderContendersList(top3, data.all_classes || []);
 
@@ -856,7 +845,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const arch = sys.architecture || 'ARM64';
 
       if (sysLabel)   sysLabel.textContent   = `EfficientNet-B0 · ${dev}`;
-      if (hwPillText) hwPillText.textContent = `${dev} • EfficientNet-B0 Ready`;
       if (dDevSub)    dDevSub.textContent    = `${dev} • ${arch}`;
     } catch {
       if (sysLabel) sysLabel.textContent = 'Offline (Check Server)';
