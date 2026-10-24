@@ -206,7 +206,7 @@ source of truth.
 |---|---|
 | Storage | 5 TB Google Drive available → store raw data, shards and all runs on Drive; no compression trade-offs needed |
 | Compute | Free Colab for Phases 0–1; reconsider Colab Pro when full runs start |
-| Backbone | **Stay on EfficientNet-B0.** Phase 5 measures the gap with a cheap frozen-encoder probe; switch only if a stronger backbone beats B0 by a clear margin (proposed: ≥ 5 points val macro-F1) |
+| Backbone | **Reopened after EXP-404:** frozen DINOv2-S / CLIP B/16 + linear head reach 55–58% balanced acc. on external photos vs 47–50% for B0 features (gap ~8–11 pts; CI wide). Compare fine-tuned B0 vs DINOv2-S vs CLIP in Colab before choosing. Original rule: Phase 5 measures the gap with a cheap frozen-encoder probe; switch only if a stronger backbone beats B0 by a clear margin (proposed: ≥ 5 points val macro-F1) |
 | Real-world test set | Use a **public dataset from a different source** instead of 300 own photos: FTAG (ASOS garment photos with fibre composition, structure and fabric-family labels; research-only, gated, images downloaded from product URLs). Optional small own-photo sanity set (~50) later |
 | Branch | `feature/tests-and-accuracy-plan` merged into `main` |
 | Still open | Location/size of `DATASETS/`; taxonomy (14 classes vs fibre + construction) |
