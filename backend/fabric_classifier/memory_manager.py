@@ -57,9 +57,26 @@ class FabricMemoryManager:
             print(f"[FabricMemoryManager] Low VRAM ({free_vram:.0f}MB free). Using CPU to be safe.")
             return "cpu"
 
-    def run_inference(self, patches_tensor: torch.Tensor) -> torch.Tensor:
+    def _forward(self, patches_tensor: torch.Tensor, device: str) -> torch.Tensor:
+        if self.model.training:
+            self.model.eval()
+        with torch.no_grad():
+            if device == "cuda":
+                self.model = self.model.half()
+                inp = patches_tensor.to(device).half()
+            else:
+                self.model = self.model.float()
+                inp = patches_tensor.to(device).float()
+            return self.model(inp).float()
+
+    def run_inference(self, patches_tensor: torch.Tensor, return_logits: bool = False) -> torch.Tensor:
         """
-        Runs batched forward pass with automatic device selection and OOM recovery.
+        Batched forward pass with automatic device selection and GPU-OOM recovery.
+
+        Returns per-patch logits of shape (n_patches, n_classes) on CPU when
+        ``return_logits`` is True, otherwise the mean softmax probability over
+        patches (legacy behaviour). Errors other than GPU OOM are raised: a silent
+        uniform fallback made real bugs look like low-confidence predictions.
         """
         device = self.get_inference_device()
 
@@ -74,47 +91,20 @@ class FabricMemoryManager:
                 self._current_device = "cpu"
                 device = "cpu"
 
-
         try:
-            with torch.no_grad():
-                if device == "cuda":
-                    inp = patches_tensor.to(device).half()
-                    if self.model.training: self.model.eval() # Ensure model is in eval mode
-                    self.model = self.model.half()
-                else:
-                    inp = patches_tensor.to(device).float()
-                    if self.model.training: self.model.eval()
-                    self.model = self.model.float()
-
-                logits = self.model(inp)
-                # The probabilities should be calculated on the full logits, then averaged.
-                # Averaging logits before softmax can lead to overconfident predictions.
-                probs = torch.softmax(logits.float(), dim=-1)
-                avg_probs = probs.mean(dim=0)
-                return avg_probs
-
+            logits = self._forward(patches_tensor, device)
         except torch.cuda.OutOfMemoryError:
             print("[FabricMemoryManager] OOM on GPU — falling back to CPU for this batch.")
             torch.cuda.empty_cache()
             gc.collect()
-            
-            # Ensure model is on CPU and in float32 for the fallback
             self.model = self.model.to("cpu").float()
             self._current_device = "cpu"
-            
-            inp = patches_tensor.to("cpu").float()
-            with torch.no_grad():
-                logits = self.model(inp)
-                probs = torch.softmax(logits, dim=-1)
-                avg_probs = probs.mean(dim=0)
-                return avg_probs
-        
-        except Exception as e:
-            print(f"[FabricMemoryManager] An unexpected error occurred during inference: {e}")
-            # Return a uniform distribution as a safe fallback
-            n_classes = self.num_classes
-            return torch.ones(n_classes, dtype=torch.float32) / n_classes
+            logits = self._forward(patches_tensor, "cpu")
 
+        logits = logits.cpu()
+        if return_logits:
+            return logits
+        return torch.softmax(logits, dim=-1).mean(dim=0)
 
     def free_cache(self):
         if torch.cuda.is_available():

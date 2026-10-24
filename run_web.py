@@ -13,7 +13,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from backend.app import app
+from backend.app import app, warm_up
 
 
 def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
@@ -38,5 +38,6 @@ if __name__ == "__main__":
     print(f"  • Mode: Multi-Patch (7 interior texture crops)")
     print(f"  • Server URL: http://127.0.0.1:{port}")
     print("=" * 65)
-    
+
+    warm_up(app)  # load the model before accepting requests
     app.run(host="127.0.0.1", port=port, debug=False)

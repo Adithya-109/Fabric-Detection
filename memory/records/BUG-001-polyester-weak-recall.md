@@ -52,6 +52,8 @@
 - **Lack of training data**: Ruled out — Polyester has 41,534 images (2nd highest in dataset), Cotton has 76,291 (largest).
 - **Overall model quality**: Ruled out — 12/14 classes now exceed 40% recall; only Cotton and Polyester lag.
 
+> **Update 2026-10-24 (root cause, evidence-based)**: Precision derived from Attempt 309's stored recall/F1 shows Cotton precision 0.90 (recall 0.18) and Corduroy precision 0.04 (recall 0.84). The model *can* recognise Cotton but almost never predicts it. Cause: double balancing in `train.py` — inverse-frequency `WeightedRandomSampler` **plus** inverse-frequency CE class weights ⇒ effective learned prior ∝ 1/count, while val/test keep the natural distribution (~35% Cotton, ~19% Polyester). This is prior shift, not missing features. **Focal loss / up-weighting would worsen it; deprioritised.** Fix path: post-hoc prior correction on existing weights (`training/prior_sweep.py`, no training), then retrain with `SAMPLER_POWER=0.5` + `LOSS="logit_adjusted"`. See `docs/IMPROVEMENT_PLAN.md` §2.
+
 ### Active Hypothesis:
 - Plain-weave synthetic fabrics (Polyester, Cotton) share macro-level visual patterns (smooth texture, similar sheen) that 7-patch square crops cannot distinguish without fabric composition information (thread count, sheen gradient).
 - The model's patch crops do not capture enough discriminative signal; focal loss or class-weighted cross-entropy may improve minority recall within these two classes.

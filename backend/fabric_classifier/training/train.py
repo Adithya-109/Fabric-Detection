@@ -41,6 +41,8 @@ try:
     from .evaluate import evaluate_model
     from .calibrate import calibrate_temperature
     from .resource_manager import get_resource_manager
+    from .balancing import effective_training_prior, tempered_sample_weights
+    from .losses import LogitAdjustedLoss, freeze_batchnorm
 except ImportError:
     if str(PROJECT_ROOT) not in sys.path:
         sys.path.insert(0, str(PROJECT_ROOT))
@@ -51,6 +53,8 @@ except ImportError:
     from backend.fabric_classifier.training.evaluate import evaluate_model
     from backend.fabric_classifier.training.calibrate import calibrate_temperature
     from backend.fabric_classifier.training.resource_manager import get_resource_manager
+    from backend.fabric_classifier.training.balancing import effective_training_prior, tempered_sample_weights
+    from backend.fabric_classifier.training.losses import LogitAdjustedLoss, freeze_batchnorm
 
 # --- Configuration & Paths ---
 # Use relative paths from the project root
@@ -104,7 +108,27 @@ HYPERPARAMS = {
     "USE_MICROSCOPE_DATA": True,
     "USE_IBUG_RESEARCH_DATA": False,
     "USE_IMATERIALIST_DATA": True,
+    # --- Accuracy-plan switches (docs/IMPROVEMENT_PLAN.md). Defaults reproduce the legacy trainer. ---
+    # Class c is sampled with probability ∝ count_c ** SAMPLER_POWER (0 = balanced/legacy, 0.5 = sqrt, 1 = natural).
+    "SAMPLER_POWER": 0.0,
+    # "cross_entropy" (legacy) or "logit_adjusted" (Menon et al. 2021; ignores CLASS_WEIGHTED_LOSS).
+    "LOSS": "cross_entropy",
+    "LOGIT_ADJUST_TAU": 1.0,
+    # Legacy also weights the CE loss by inverse class frequency (double balancing with the sampler).
+    "CLASS_WEIGHTED_LOSS": True,
+    # Keep BatchNorm in eval mode during fine-tuning (batch size 4 is too small for BN statistics).
+    "FREEZE_BN": False,
+    # Patch geometry: None = fixed 160 px (legacy); e.g. 0.2 = 20% of the garment's short side.
+    "PATCH_FRACTION": None,
+    # Minimum share of each patch on the garment mask (legacy 0.5).
+    "PATCH_MIN_COVERAGE": 0.5,
 }
+
+# Override with FABRIC_IMATERIALIST_DIR to run on machines other than the original Windows box.
+IMATERIALIST_DIR = os.environ.get(
+    "FABRIC_IMATERIALIST_DIR",
+    r"c:\Users\A0SKZ\STORE\ALL_CODE\MachineLearning\DATASETS\imaterialist_processed",
+)
 
 # Prefer direct fibre/fabric sources when available; fall back to proxy sources for coverage.
 TARGET_PRIMARY_SOURCES = {
@@ -675,6 +699,8 @@ class FabricDataset(Dataset):
                     n_patches=self.n_patches,
                     input_size=HYPERPARAMS["IMG_SIZE"],
                     rng=patch_rng,
+                    patch_fraction=HYPERPARAMS.get("PATCH_FRACTION"),
+                    min_coverage=HYPERPARAMS.get("PATCH_MIN_COVERAGE", 0.5),
                 )
             
             if self.is_train:
@@ -810,13 +836,10 @@ def prioritized_sample_from_sources(target_class_name, source_to_files, max_imag
     return selected[:max_images]
 
 
-def build_dataloaders(train_dataset, val_dataset, test_dataset, train_labels, device, batch_size, num_workers, pin_memory):
-    # Handle class imbalance with WeightedRandomSampler using fixed 14-class indices.
-    class_counts = np.bincount(train_labels, minlength=len(MATERIAL_CLASSES))
-    class_weights = np.zeros(len(MATERIAL_CLASSES), dtype=np.float32)
-    nonzero_mask = class_counts > 0
-    class_weights[nonzero_mask] = 1.0 / class_counts[nonzero_mask]
-    sample_weights = np.array([class_weights[t] for t in train_labels], dtype=np.float32)
+def build_dataloaders(train_dataset, val_dataset, test_dataset, train_labels, device, batch_size, num_workers, pin_memory,
+                      sampler_power=0.0):
+    # Class c is drawn with probability ∝ count_c ** sampler_power (0.0 = fully balanced, the legacy behaviour).
+    sample_weights = tempered_sample_weights(train_labels, len(MATERIAL_CLASSES), power=float(sampler_power))
     sampler = WeightedRandomSampler(
         weights=sample_weights.tolist(),
         num_samples=len(sample_weights),
@@ -947,7 +970,7 @@ def load_and_split_data(additional_sources=None):
         test_val_files, test_val_labels, test_size=0.5, stratify=test_val_labels, random_state=42)
         
     if HYPERPARAMS.get("USE_IMATERIALIST_DATA", False):
-        imat_dir = r"c:\Users\A0SKZ\STORE\ALL_CODE\MachineLearning\DATASETS\imaterialist_processed"
+        imat_dir = IMATERIALIST_DIR
         if os.path.isdir(imat_dir):
             for split, split_files, split_labels in [("train", train_files, train_labels), 
                                                      ("val", val_files, val_labels), 
@@ -1089,6 +1112,8 @@ def run_training_attempt(params, attempt_num, training_log):
         class_counts = np.bincount(train_labels, minlength=len(MATERIAL_CLASSES)).astype(np.float32)
         class_weights = class_counts.sum() / (len(MATERIAL_CLASSES) * np.maximum(class_counts, 1.0))
         class_weights_tensor = torch.tensor(class_weights, dtype=torch.float32, device=device)
+        if not params.get("CLASS_WEIGHTED_LOSS", True):
+            class_weights_tensor = None
 
         train_loader, val_loader, test_loader = build_dataloaders(
             train_dataset=train_dataset,
@@ -1099,13 +1124,25 @@ def run_training_attempt(params, attempt_num, training_log):
             batch_size=params["BATCH_SIZE"],
             num_workers=params["NUM_WORKERS"],
             pin_memory=params.get("PIN_MEMORY", device == "cuda"),
+            sampler_power=params.get("SAMPLER_POWER", 0.0),
         )
 
         model = get_model(num_classes=len(MATERIAL_CLASSES)).to(device)
-        criterion = nn.CrossEntropyLoss(
-            weight=class_weights_tensor,
-            label_smoothing=params["LABEL_SMOOTHING"],
-        )
+        if params.get("LOSS", "cross_entropy") == "logit_adjusted":
+            # Adjust by the prior the sampler actually shows the model (no extra class weights).
+            sampled_prior = effective_training_prior(
+                class_counts, params.get("SAMPLER_POWER", 0.0), class_weighted_loss=False
+            )
+            criterion = LogitAdjustedLoss(
+                sampled_prior,
+                tau=params.get("LOGIT_ADJUST_TAU", 1.0),
+                label_smoothing=params["LABEL_SMOOTHING"],
+            ).to(device)
+        else:
+            criterion = nn.CrossEntropyLoss(
+                weight=class_weights_tensor,
+                label_smoothing=params["LABEL_SMOOTHING"],
+            )
         scaler = GradScaler(enabled=device == "cuda")
 
         best_val_score = -1.0
@@ -1335,6 +1372,8 @@ def run_training_attempt(params, attempt_num, training_log):
                 optimizer, scheduler = initialize_optimizer_and_scheduler(epoch)
 
             model.train()
+            if params.get("FREEZE_BN", False):
+                freeze_batchnorm(model)
             running_loss = 0.0
             seen_samples = 0
             skipped_nan_steps = 0
@@ -1516,6 +1555,10 @@ def run_training_attempt(params, attempt_num, training_log):
                     "model_state_dict": model.state_dict(),
                     "class_map": {i: i for i in range(len(MATERIAL_CLASSES))},
                     "present_class_names": MATERIAL_CLASSES,
+                    "patch_config": {
+                        "patch_fraction": HYPERPARAMS.get("PATCH_FRACTION"),
+                        "min_coverage": HYPERPARAMS.get("PATCH_MIN_COVERAGE", 0.5),
+                    },
                 }, BEST_WEIGHTS_PATH)
                 print(f"New best model saved with Validation Macro-F1: {best_val_score:.4f}")
                 epochs_no_improve = 0

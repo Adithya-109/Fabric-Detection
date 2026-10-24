@@ -1,6 +1,10 @@
 import torch
-from sklearn.metrics import accuracy_score, f1_score, recall_score
 import numpy as np
+
+try:
+    from .metrics import compute_classification_metrics
+except ImportError:  # executed as a loose script
+    from backend.fabric_classifier.training.metrics import compute_classification_metrics
 
 def top_k_accuracy(output: torch.Tensor, target: torch.Tensor, k=3):
     """Computes the top-k accuracy for the given predictions and targets."""
@@ -65,50 +69,10 @@ def evaluate_model(model, dataloader, device, class_names, criterion=None):
     
     _, all_preds = torch.max(all_outputs, 1)
 
-    # Calculate metrics
-    accuracy = accuracy_score(all_labels.numpy(), all_preds.numpy())
-    top3_acc = top_k_accuracy(all_outputs, all_labels, k=3)
-    macro_f1 = f1_score(all_labels.numpy(), all_preds.numpy(), average='macro', zero_division=0)
-    
-    # Detailed per-class metrics
-    recall_per_class = np.atleast_1d(
-        recall_score(
-            all_labels.numpy(),
-            all_preds.numpy(),
-            average=None,
-            zero_division=0,
-            labels=np.arange(len(class_names)),
-        )
-    ).astype(np.float32)
-    f1_per_class = np.atleast_1d(
-        f1_score(
-            all_labels.numpy(),
-            all_preds.numpy(),
-            average=None,
-            zero_division=0,
-            labels=np.arange(len(class_names)),
-        )
-    ).astype(np.float32)
-
-    worst_class_recall = float(np.min(recall_per_class)) if recall_per_class.size > 0 else 0.0
-
-    per_class_metrics = {}
-    for i, class_name in enumerate(class_names):
-        recall_i = float(recall_per_class[i]) if i < recall_per_class.size else 0.0
-        f1_i = float(f1_per_class[i]) if i < f1_per_class.size else 0.0
-        per_class_metrics[class_name] = {
-            "recall": recall_i,
-            "f1_score": f1_i,
-        }
-
-    class_recall_list = [float(x) for x in recall_per_class.tolist()]
-    
-    return {
-        "loss": loss_value,
-        "top1_accuracy": accuracy,
-        "top3_accuracy": top3_acc,
-        "macro_f1": macro_f1,
-        "worst_class_recall": worst_class_recall,
-        "class_recall": class_recall_list,
-        "per_class_metrics": per_class_metrics
-    }
+    # Shared metric implementation: adds per-class precision/support, balanced accuracy and the
+    # confusion matrix; worst recall is taken over classes present in this split.
+    metrics = compute_classification_metrics(
+        all_labels.numpy(), all_preds.numpy(), class_names, scores=all_outputs.numpy(), top_k=3
+    )
+    metrics["loss"] = loss_value
+    return metrics

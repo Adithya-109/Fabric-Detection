@@ -85,11 +85,16 @@ def calibrate_temperature(model, dataloader, device):
     os.makedirs(calib_dir, exist_ok=True)
     calib_path = os.path.join(calib_dir, 'temperature.json')
     
-    calib_data = {
+    # Merge so that other calibration entries (e.g. prior_correction) are kept.
+    calib_data = {}
+    if os.path.exists(calib_path):
+        with open(calib_path) as f:
+            calib_data = json.load(f)
+    calib_data.update({
         "temperature": float(best_temp),
         "ece_before": ece_before,
         "ece_after": ece_after
-    }
+    })
     with open(calib_path, 'w') as f:
         json.dump(calib_data, f, indent=4)
     
