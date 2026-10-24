@@ -1,0 +1,39 @@
+name: backbone-probe
+
+# EXP-404: frozen pretrained backbones + linear heads vs the current model, on external photos.
+# Results are committed to the `results/backbone-probe` branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["probe/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 170
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt datasets huggingface_hub transformers
+      - name: Prepare external dataset
+        run: python -m tools.prepare_external_eval --out data/external
+      - name: Run backbone probe
+        run: python -m tools.backbone_probe --data-dir data/external --out reports/backbone_probe
+      - name: Publish results to results/backbone-probe branch
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B results/backbone-probe
+          git add -f reports/backbone_probe
+          git commit -m "Backbone probe for ${GITHUB_SHA::7}" || exit 0
+          git push -f origin results/backbone-probe
