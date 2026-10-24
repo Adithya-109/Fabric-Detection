@@ -83,10 +83,10 @@ All of it currently lives in `DATASETS/` on the original Windows machine — **n
 5. **Label audit (1–2 h of your time, high value).** A notebook shows random 48-image grids per class;
    you mark obviously wrong labels. Gives a per-class noise estimate — especially Cotton vs Polyester, where
    the label comes from a product listing, not the pixels.
-6. **In-the-wild test set (your photos).** ~20–30 garments per class, photographed normally (worn, hanging,
-   on a bed), label taken from the **care tag**. Stored separately, never trained on. This is the number
-   that measures the actual project goal. Rare classes (Corduroy, Suede, Velvet) may get fewer — fine,
-   report support per class.
+6. **Independent real-world test set.** FTAG (ASOS product photos; labels from the product's fibre
+   composition, structure and fabric family). Different source from the training data, so it measures
+   generalisation. Map composition to our classes only when one fibre dominates (e.g. ≥ 80%); drop blends.
+   Never trained on. Covers dresses only, so per-class support will be uneven — report it.
 
 > The new split changes the test set, so Attempt 309's 43% is **not comparable** to new numbers.
 > First job on the new split: re-evaluate the existing `fabric_clf_best.pt` → that is the new baseline.
@@ -198,16 +198,16 @@ source of truth.
 
 ---
 
-## 8. Decisions needed from you
+## 8. Decisions (2026-10-24)
 
-1. **Data:** where is `DATASETS/` now, and roughly how big? Can you or your friend upload it to Drive?
-2. **Storage/compute:** OK with Google One 100 GB? Free Colab for Phases 0–1, Colab Pro from Phase 2?
-3. **Backbone contract:** keep EfficientNet-B0 fixed, or allow a change if Phase 5 says it's the limit?
-4. **Taxonomy:** keep 14 classes or move to fibre + construction heads?
-5. **Your photo test set:** willing to shoot ~300 tagged garment photos?
-6. **Branch:** merge `feature/tests-and-accuracy-plan` into `main` of Fabric-Detection so all new work starts there?
-
----
+| Question | Decision |
+|---|---|
+| Storage | 5 TB Google Drive available → store raw data, shards and all runs on Drive; no compression trade-offs needed |
+| Compute | Free Colab for Phases 0–1; reconsider Colab Pro when full runs start |
+| Backbone | **Stay on EfficientNet-B0.** Phase 5 measures the gap with a cheap frozen-encoder probe; switch only if a stronger backbone beats B0 by a clear margin (proposed: ≥ 5 points val macro-F1) |
+| Real-world test set | Use a **public dataset from a different source** instead of 300 own photos: FTAG (ASOS garment photos with fibre composition, structure and fabric-family labels; research-only, gated, images downloaded from product URLs). Optional small own-photo sanity set (~50) later |
+| Branch | `feature/tests-and-accuracy-plan` merged into `main` |
+| Still open | Location/size of `DATASETS/`; taxonomy (14 classes vs fibre + construction) |
 
 ## 9. What I build next (once data location is known)
 1. `tools/build_manifest.py`, `pack_shards.py` (+ tests)
