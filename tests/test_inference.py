@@ -148,6 +148,9 @@ class TestCalibrationLoading(unittest.TestCase):
         big = noise_image((1600, 1200), seed=4)
         small = big.resize((512, 384), Image.Resampling.BILINEAR)
         a, b = clf.predict_detailed(big), clf.predict_detailed(small)
+        # identical patches → the model sees exactly what it would for a 512-px photo
+        for pa, pb in zip(a["patches"], b["patches"]):
+            np.testing.assert_array_equal(np.asarray(pa), np.asarray(pb))
         np.testing.assert_allclose(a["probabilities"], b["probabilities"], atol=1e-5)
 
     def test_resize_can_be_disabled(self):
@@ -155,7 +158,9 @@ class TestCalibrationLoading(unittest.TestCase):
         big = noise_image((1600, 1200), seed=4)
         small = big.resize((512, 384), Image.Resampling.BILINEAR)
         a, b = clf.predict_detailed(big), clf.predict_detailed(small)
-        self.assertFalse(np.allclose(a["probabilities"], b["probabilities"], atol=1e-5))
+        # without resizing, the 160-px patches cover a much smaller area of the large photo
+        same = all(np.array_equal(np.asarray(pa), np.asarray(pb)) for pa, pb in zip(a["patches"], b["patches"]))
+        self.assertFalse(same)
 
     def test_patch_config_read_from_checkpoint_and_used(self):
         cfg = {"patch_fraction": 0.2, "min_coverage": 0.9}
