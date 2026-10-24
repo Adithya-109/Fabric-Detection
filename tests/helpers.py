@@ -1,12 +1,17 @@
 """Shared helpers for the test suite."""
 import importlib.util
 import io
+import os
 
 import numpy as np
 from PIL import Image
 
 HAS_TORCH = importlib.util.find_spec("torch") is not None and importlib.util.find_spec("torchvision") is not None
 TORCH_SKIP_REASON = "PyTorch/torchvision not installed"
+
+# CI sets REQUIRE_TORCH=1 so the PyTorch tests can never be skipped silently there.
+if os.environ.get("REQUIRE_TORCH") == "1" and not HAS_TORCH:
+    raise RuntimeError("REQUIRE_TORCH=1 but PyTorch/torchvision are not installed")
 
 
 def solid_image(color=(180, 160, 140), size=(400, 600), mode="RGB"):
