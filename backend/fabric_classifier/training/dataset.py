@@ -46,7 +46,7 @@ def _center_crop(img_rgb: Image.Image, input_size: int) -> Image.Image:
 
 def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=None,
                     patch_fraction=None, mask=None, min_patch_size=64, max_patch_size=512,
-                    min_coverage=0.5, return_boxes=False):
+                    min_coverage=0.5, return_boxes=False, relax_if_needed=False):
     """
     Extracts n_patches texture patches from the garment interior.
     Returns a list of PIL Images, each resized to input_size x input_size.
@@ -63,6 +63,10 @@ def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=
             recommended for general photos.
         return_boxes: if True, return ``(patches, boxes)`` where each box is
             ``(x1, y1, x2, y2)`` in the coordinates of the image that was passed in.
+        relax_if_needed: if fewer than ``n_patches`` fit (e.g. a garment narrower than the
+            patch), retry with patches shrunk by 25% steps down to ``min_patch_size``, then
+            with lower coverage, instead of falling back to the whole image. Results are
+            identical to the default whenever the normal patches fit.
     """
     if not 0.0 <= min_coverage <= 1.0:
         raise ValueError("min_coverage must be in [0, 1]")
@@ -130,34 +134,47 @@ def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=
         patch_size = compute_patch_size(bbox_w, bbox_h, patch_fraction, min_patch_size, max_patch_size)
 
     # Fallback to center crop if the mask is too small.
-    if len(ys) < (patch_size * patch_size * 0.1):
+    smallest = min(patch_size, min_patch_size) if relax_if_needed else patch_size
+    if len(ys) < (smallest * smallest * 0.1):
         boxes = [centre_box()] * n_patches
         return finish([_center_crop(img_rgb, input_size)] * n_patches)
 
     patches = []
-    max_attempts = n_patches * 20
-    attempts = 0
     h, w = img_arr.shape[:2]
 
-    while len(patches) < n_patches and attempts < max_attempts:
-        attempts += 1
-        idx = int(rng.integers(0, len(ys)))
-        cy, cx = ys[idx], xs[idx]
+    def sample(size, coverage):
+        attempts = 0
+        while len(patches) < n_patches and attempts < n_patches * 20:
+            attempts += 1
+            idx = int(rng.integers(0, len(ys)))
+            cy, cx = ys[idx], xs[idx]
 
-        x1 = cx - patch_size // 2
-        y1 = cy - patch_size // 2
-        x2 = x1 + patch_size
-        y2 = y1 + patch_size
-        if x1 < 0 or y1 < 0 or x2 > w or y2 > h:
-            continue
+            x1 = cx - size // 2
+            y1 = cy - size // 2
+            x2 = x1 + size
+            y2 = y1 + size
+            if x1 < 0 or y1 < 0 or x2 > w or y2 > h:
+                continue
 
-        # Require the patch to be mostly garment.
-        if safe_mask[y1:y2, x1:x2].mean() < min_coverage:
-            continue
+            # Require the patch to be mostly garment.
+            if safe_mask[y1:y2, x1:x2].mean() < coverage:
+                continue
 
-        patch = img_rgb.crop((x1, y1, x2, y2))
-        patches.append(patch.resize((input_size, input_size), Image.Resampling.BILINEAR))
-        boxes.append((int(x1), int(y1), int(x2), int(y2)))
+            patch = img_rgb.crop((x1, y1, x2, y2))
+            patches.append(patch.resize((input_size, input_size), Image.Resampling.BILINEAR))
+            boxes.append((int(x1), int(y1), int(x2), int(y2)))
+
+    sample(patch_size, min_coverage)
+
+    if relax_if_needed and len(patches) < n_patches:
+        size = patch_size
+        while len(patches) < n_patches and size > min_patch_size:
+            size = max(min_patch_size, int(size * 0.75))
+            sample(size, min_coverage)
+        for coverage in (0.75, 0.5):
+            if len(patches) >= n_patches or coverage >= min_coverage:
+                continue
+            sample(min(patch_size, min_patch_size), coverage)
 
     # If no patches found, return a resized version of the whole image, duplicated.
     if not patches:

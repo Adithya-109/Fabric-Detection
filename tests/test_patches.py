@@ -137,6 +137,43 @@ class TestExtractPatchesMask(unittest.TestCase):
             extract_patches(noise_image((300, 200)), mask=np.ones((10, 10), dtype=bool))
 
 
+class TestExtractPatchesRelax(unittest.TestCase):
+    """A garment narrower than the patch must not silently fall back to the whole photo."""
+
+    def _narrow_garment(self):
+        img = solid_image((120, 120, 120), (512, 512))
+        img.paste(solid_image((200, 30, 30), (110, 400)), (200, 50))  # 110 px wide "garment"
+        mask = np.zeros((512, 512), dtype=bool)
+        mask[50:450, 200:310] = True
+        return img, mask
+
+    def test_without_relax_narrow_mask_falls_back_to_whole_image(self):
+        img, mask = self._narrow_garment()
+        _, boxes = extract_patches(img, mask=mask, min_coverage=0.9, rng=np.random.default_rng(0),
+                                   return_boxes=True)
+        self.assertEqual(boxes[0], (0, 0, 512, 512))  # documents the legacy fallback
+
+    def test_relax_shrinks_patches_to_fit_inside_the_garment(self):
+        img, mask = self._narrow_garment()
+        patches, boxes = extract_patches(img, mask=mask, min_coverage=0.9, relax_if_needed=True,
+                                         rng=np.random.default_rng(0), return_boxes=True)
+        self.assertEqual(len(patches), 7)
+        for x1, y1, x2, y2 in boxes:
+            self.assertGreaterEqual(x1, 195)
+            self.assertLessEqual(x2, 315)
+            self.assertGreaterEqual(x2 - x1, 64)  # never below min_patch_size
+        for p in patches:
+            red = np.asarray(p)[..., 0].mean()
+            self.assertGreater(red, 170)  # patch content is the red garment, not the grey backdrop
+
+    def test_relax_does_not_change_results_when_patches_fit(self):
+        img = noise_image((500, 400), seed=3)
+        a = extract_patches(img, rng=np.random.default_rng(0))
+        b = extract_patches(img, rng=np.random.default_rng(0), relax_if_needed=True)
+        for x, y in zip(a, b):
+            np.testing.assert_array_equal(np.asarray(x), np.asarray(y))
+
+
 class TestExtractPatchesScale(unittest.TestCase):
     def _transitions(self, image, **kwargs):
         patches = extract_patches(image, n_patches=5, rng=np.random.default_rng(0), **kwargs)

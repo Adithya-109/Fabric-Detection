@@ -165,6 +165,7 @@ class TestDiagnosticEndToEnd(unittest.TestCase):
                 self.assertIn(v, res)
                 self.assertIn("balanced_accuracy", res[v]["prior_fixed"])
             self.assertEqual(res["meta"]["images"], 6)
+            self.assertIn("garment_512", res["meta"]["single_crop_fallbacks"])
             self.assertTrue(os.path.exists(os.path.join(out, "report.md")))
             self.assertTrue(os.path.exists(os.path.join(out, "patch_examples.jpg")))
             self.assertTrue(os.path.exists(os.path.join(out, "logits.npz")))

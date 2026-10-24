@@ -7,7 +7,8 @@ garment? Variants, each run with the SAME weights:
   legacy_512   – same, after resizing the photo to max side 512 (the training data's scale)
   centre_512   – patches only from the central region (width 50%, height 60%)
   garment_512  – patches only from the largest clothing region found by a clothes
-                 segmentation model (mattmdjaga/segformer_b2_clothes)
+                 segmentation model (mattmdjaga/segformer_b2_clothes); patches shrink to
+                 fit narrow garments instead of falling back to the whole photo
   whole        – no patches: the whole photo resized to 224×224 (reference)
 
 Metrics are reported raw and after undoing the training-prior inversion
@@ -160,6 +161,7 @@ def main(argv=None):  # pragma: no cover - needs torch, transformers, data
 
     logits = {v: [] for v in VARIANTS}
     garment_fallbacks, garment_cover = 0, []
+    single_crop = {v: 0 for v in VARIANTS if v != "whole"}
     viz_rows, viz_count = [], {}
     for n, (path, y) in enumerate(zip(paths, labels)):
         seed = zlib.crc32(os.path.normpath(path).encode()) & 0xFFFFFFFF
@@ -185,9 +187,13 @@ def main(argv=None):  # pragma: no cover - needs torch, transformers, data
                                                     return_boxes=True)
         logits["centre_512"].append(run(pats))
         pats, boxes["garment_512"] = extract_patches(small.convert("RGBA"), mask=gmask, min_coverage=0.9,
-                                                     rng=np.random.default_rng(seed), return_boxes=True)
+                                                     relax_if_needed=True, rng=np.random.default_rng(seed),
+                                                     return_boxes=True)
         logits["garment_512"].append(run(pats))
         logits["whole"].append(run([img.resize((224, 224), Image.Resampling.BILINEAR)]))
+        for v, b in boxes.items():
+            if len(set(b)) == 1:  # one crop repeated = no real patches were sampled
+                single_crop[v] += 1
 
         cls = names[y]
         if viz_count.get(cls, 0) < args.viz_per_class:
@@ -230,10 +236,11 @@ def main(argv=None):  # pragma: no cover - needs torch, transformers, data
         auc_txt = "n/a" if auc is None else f"{auc:.3f}"
         table.append(f"| {v} | {100 * f['balanced_accuracy']:.1f}% | {100 * f['macro_f1']:.1f}% | "
                      f"{100 * f['top3']:.1f}% | {f['median_true_rank']:.0f} | "
-                     f"{auc_txt} | {100 * res['raw']['balanced_accuracy']:.1f}% |")
+                     f"{auc_txt} | {100 * res['raw']['balanced_accuracy']:.1f}% | {single_crop.get(v, '–')} |")
     results["meta"] = {"images": len(paths), "per_class": {c: int((labels == i).sum()) for i, c in enumerate(names)
                                                           if (labels == i).any()},
                        "garment_mask_fallbacks": garment_fallbacks,
+                       "single_crop_fallbacks": single_crop,
                        "mean_garment_fraction": float(np.mean(garment_cover))}
     for k in results:
         if k in VARIANTS:
@@ -252,8 +259,9 @@ def main(argv=None):  # pragma: no cover - needs torch, transformers, data
         f"Garment mask too small → centre-crop fallback on {garment_fallbacks} images; "
         f"garment covers {100 * results['meta']['mean_garment_fraction']:.0f}% of a photo on average.", "",
         "Chance level: balanced accuracy ≈ 1/13 = 7.7%, median rank ≈ 7, AUC = 0.5.", "",
-        "| Variant | Balanced acc. | Macro-F1 | Top-3 | Median true rank | Cotton-vs-Poly AUC | Balanced acc. (raw) |",
-        "|---|---|---|---|---|---|---|", *table, "",
+        "| Variant | Balanced acc. | Macro-F1 | Top-3 | Median true rank | Cotton-vs-Poly AUC | Balanced acc. (raw) "
+        "| Single-crop fallbacks |",
+        "|---|---|---|---|---|---|---|---|", *table, "",
         "Columns 2–5 are after undoing the training-prior inversion (no tuning on this data).", "",
         "## Recall per class (prior-fixed)", "", *recall_rows, "",
     ])
