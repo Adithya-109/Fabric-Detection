@@ -1,0 +1,38 @@
+name: patch-diagnostic
+
+# Compares patch-selection strategies with the current weights on external photos.
+# Results are committed to the `results/patch-diagnostic` branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["diag/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt datasets huggingface_hub transformers
+      - name: Prepare external dataset
+        run: python -m tools.prepare_external_eval --out data/external
+      - name: Run patch-strategy diagnostic
+        run: python -m tools.patch_diagnostic --data-dir data/external --split eval --cap 150 --out reports/patch_diagnostic
+      - name: Publish results to results/patch-diagnostic branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B results/patch-diagnostic
+          git add -f reports/patch_diagnostic
+          git commit -m "Patch-strategy diagnostic for ${GITHUB_SHA::7}"
+          git push -f origin results/patch-diagnostic

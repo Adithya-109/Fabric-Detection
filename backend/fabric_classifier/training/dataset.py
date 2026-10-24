@@ -46,7 +46,7 @@ def _center_crop(img_rgb: Image.Image, input_size: int) -> Image.Image:
 
 def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=None,
                     patch_fraction=None, mask=None, min_patch_size=64, max_patch_size=512,
-                    min_coverage=0.5):
+                    min_coverage=0.5, return_boxes=False):
     """
     Extracts n_patches texture patches from the garment interior.
     Returns a list of PIL Images, each resized to input_size x input_size.
@@ -61,6 +61,8 @@ def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=
         min_coverage: minimum fraction of a patch that must lie on the (eroded) garment
             mask. The legacy default 0.5 lets patches be half background; 0.9+ is
             recommended for general photos.
+        return_boxes: if True, return ``(patches, boxes)`` where each box is
+            ``(x1, y1, x2, y2)`` in the coordinates of the image that was passed in.
     """
     if not 0.0 <= min_coverage <= 1.0:
         raise ValueError("min_coverage must be in [0, 1]")
@@ -72,6 +74,26 @@ def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=
         expected = (pil_image.size[1], pil_image.size[0])
         if mask.shape != expected:
             raise ValueError(f"mask shape {mask.shape} does not match image (H, W) {expected}")
+
+    orig_w, orig_h = pil_image.size
+    boxes = []
+
+    def finish(result):
+        if not return_boxes:
+            return result
+        sx, sy = orig_w / pil_image.size[0], orig_h / pil_image.size[1]
+        scaled = [(int(round(x1 * sx)), int(round(y1 * sy)), int(round(x2 * sx)), int(round(y2 * sy)))
+                  for x1, y1, x2, y2 in boxes]
+        return result, scaled
+
+    def whole_box():
+        return (0, 0, pil_image.size[0], pil_image.size[1])
+
+    def centre_box():
+        w0, h0 = pil_image.size
+        side = min(w0, h0)
+        left, top = (w0 - side) // 2, (h0 - side) // 2
+        return (left, top, left + side, top + side)
 
     # Cap very large images to avoid excessive memory usage on malformed files.
     if max(pil_image.size) > MAX_SIDE:
@@ -92,7 +114,8 @@ def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=
 
     # Fallback if decoded image shape is invalid.
     if img_arr.ndim != 3 or img_arr.shape[2] < 4:
-        return [img_rgb.resize((input_size, input_size), Image.Resampling.BILINEAR)] * n_patches
+        boxes = [whole_box()] * n_patches
+        return finish([img_rgb.resize((input_size, input_size), Image.Resampling.BILINEAR)] * n_patches)
 
     region = mask if mask is not None else foreground_mask(img_arr)
 
@@ -108,7 +131,8 @@ def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=
 
     # Fallback to center crop if the mask is too small.
     if len(ys) < (patch_size * patch_size * 0.1):
-        return [_center_crop(img_rgb, input_size)] * n_patches
+        boxes = [centre_box()] * n_patches
+        return finish([_center_crop(img_rgb, input_size)] * n_patches)
 
     patches = []
     max_attempts = n_patches * 20
@@ -133,13 +157,18 @@ def extract_patches(pil_image, n_patches=7, patch_size=160, input_size=224, rng=
 
         patch = img_rgb.crop((x1, y1, x2, y2))
         patches.append(patch.resize((input_size, input_size), Image.Resampling.BILINEAR))
+        boxes.append((int(x1), int(y1), int(x2), int(y2)))
 
     # If no patches found, return a resized version of the whole image, duplicated.
     if not patches:
-        return [img_rgb.resize((input_size, input_size), Image.Resampling.BILINEAR)] * n_patches
+        boxes = [whole_box()] * n_patches
+        return finish([img_rgb.resize((input_size, input_size), Image.Resampling.BILINEAR)] * n_patches)
 
     # If not enough patches were found, duplicate existing ones.
     while len(patches) < n_patches:
-        patches.extend(patches[:n_patches - len(patches)])
+        k = n_patches - len(patches)
+        patches.extend(patches[:k])
+        boxes.extend(boxes[:k])
 
-    return patches[:n_patches]
+    boxes = boxes[:n_patches]
+    return finish(patches[:n_patches])
