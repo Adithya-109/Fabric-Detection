@@ -28,6 +28,11 @@
 
 ---
 
+## 3b. Update 2026-10-24 — test suite + accuracy plan (branch `feature/tests-and-accuracy-plan`)
+- Root cause of BUG-001 identified as prior shift from double balancing (sampler + loss weights); see `docs/IMPROVEMENT_PLAN.md` §2 and BUG-001 update.
+- Added `tests/` (unittest/pytest), shared post-processing, metrics with precision + confusion matrix, leakage-free splits, opt-in trainer flags (defaults = legacy behaviour), Phase-A `prior_sweep.py`. No training was run.
+- **Next concrete action (needs user OK, no training)**: on the RTX machine run `python -m backend.fabric_classifier.training.prior_sweep --report-test --write` and record as a new EXP.
+
 ## 4. Constraints, Working Files, Next Action
 - **Constraints**: conda `myenv`; never run concurrent `train.py` writers; FP16, RTX 3050 6GB; **user instruction 2026-10-14: do not start anything without asking**; data must satisfy [DEC-001](file:///c:/Users/A0SKZ/STORE/ALL_CODE/BUISINESS/Clothes_Machine_Learning/memory/records/DEC-001-non-commercial-data-policy.md).
 - **Working files**: `backend/fabric_classifier/training/train.py`, `epoch_progress.jsonl`, `training_log.json`, `backend/fabric_classifier/weights/`, scratch scripts in `scratch/`.
