@@ -18,7 +18,9 @@ from .postprocess import (
     format_top_k,
     prior_correction,
 )
-from .training.dataset import extract_patches
+from .training.dataset import extract_patches, resize_max_side
+
+DEFAULT_MAX_SIDE = 512  # training images were stored at max side 512 (see EXP-403)
 
 
 def _stable_image_seed(pil_image: Image.Image) -> int:
@@ -39,7 +41,8 @@ def preprocess_patches(patches: list[Image.Image]) -> torch.Tensor:
 
 
 class FabricClassifier:
-    def __init__(self, weights_path: str, device: str = "cuda", aggregation: str = DEFAULT_AGGREGATION):
+    def __init__(self, weights_path: str, device: str = "cuda", aggregation: str = DEFAULT_AGGREGATION,
+                 max_side="checkpoint"):
         """
         Initializes the fabric classifier.
 
@@ -48,6 +51,8 @@ class FabricClassifier:
             device: preferred device; falls back to CPU automatically.
             aggregation: how patch logits are combined. "mean_logits" matches evaluate.py
                 and calibrate.py, so served predictions use the measured decision rule.
+            max_side: resize inputs so the longer side is at most this many pixels before
+                cutting patches (None disables). Default: the checkpoint's setting, else 512.
         """
         if not os.path.exists(weights_path):
             raise FileNotFoundError(f"Weights file not found at {weights_path}")
@@ -77,6 +82,10 @@ class FabricClassifier:
             "patch_fraction": saved_patch_config.get("patch_fraction"),
             "min_coverage": saved_patch_config.get("min_coverage", 0.5),
         }
+
+        if max_side == "checkpoint":
+            max_side = saved_patch_config.get("max_side", DEFAULT_MAX_SIDE)
+        self.max_side = max_side
 
         self.device = device
         self.aggregation = aggregation
@@ -136,6 +145,7 @@ class FabricClassifier:
         Returns {"top3", "probabilities" (np.ndarray over all classes), "patches", "timing"}.
         """
         start = time.perf_counter()
+        pil_image = resize_max_side(pil_image, self.max_side)
         patch_rng = np.random.default_rng(_stable_image_seed(pil_image))
         patches = extract_patches(pil_image, n_patches=n_patches, rng=patch_rng, **self.patch_config)
         patch_ms = (time.perf_counter() - start) * 1000

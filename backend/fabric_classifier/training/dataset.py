@@ -21,6 +21,19 @@ def foreground_mask(rgba: np.ndarray, white_threshold: int = 230, alpha_threshol
     return is_opaque & ~is_white
 
 
+def resize_max_side(image: Image.Image, max_side):
+    """Shrink so the longer side is at most ``max_side`` (keeps aspect ratio); ``None`` = no-op.
+
+    The training images were stored at max side 512, so the fixed 160-px patches only show
+    the zoom level the model learned when inputs are resized the same way (EXP-403).
+    """
+    if max_side is None or max(image.size) <= max_side:
+        return image
+    scale = max_side / float(max(image.size))
+    size = (max(1, int(round(image.width * scale))), max(1, int(round(image.height * scale))))
+    return image.resize(size, Image.Resampling.BILINEAR)
+
+
 def compute_patch_size(width: int, height: int, fraction: float = 0.25,
                        min_size: int = 64, max_size: int = 512) -> int:
     """Patch side as a fraction of the region's short side, clamped to [min_size, max_size].

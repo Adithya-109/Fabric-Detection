@@ -15,6 +15,7 @@ from backend.fabric_classifier.training.dataset import (
     compute_patch_size,
     extract_patches,
     foreground_mask,
+    resize_max_side,
 )
 
 
@@ -41,6 +42,20 @@ class TestForegroundMask(unittest.TestCase):
     def test_rejects_non_rgba(self):
         with self.assertRaises(ValueError):
             foreground_mask(np.zeros((4, 4, 3), dtype=np.uint8))
+
+
+class TestResizeMaxSide(unittest.TestCase):
+    def test_large_images_shrink_keeping_aspect_ratio(self):
+        self.assertEqual(resize_max_side(noise_image((2048, 1536)), 512).size, (512, 384))
+        self.assertEqual(resize_max_side(noise_image((600, 1200)), 512).size, (256, 512))
+
+    def test_small_images_are_returned_unchanged(self):
+        img = noise_image((300, 200))
+        self.assertIs(resize_max_side(img, 512), img)
+
+    def test_none_disables_resizing(self):
+        img = noise_image((2000, 1000))
+        self.assertIs(resize_max_side(img, None), img)
 
 
 class TestComputePatchSize(unittest.TestCase):

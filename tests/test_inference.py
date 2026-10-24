@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 import numpy as np
+from PIL import Image
 
 from tests import ROOT  # noqa: F401
 from tests.helpers import HAS_TORCH, TORCH_SKIP_REASON, noise_image
@@ -139,6 +140,22 @@ class TestCalibrationLoading(unittest.TestCase):
     def test_patch_config_defaults_to_legacy(self):
         clf = FabricClassifier(_write_weights(self.tmp), device="cpu")
         self.assertEqual(clf.patch_config, {"patch_fraction": None, "min_coverage": 0.5})
+
+    def test_inputs_resized_to_512_by_default(self):
+        # EXP-403: the model only sees the zoom level it was trained on when photos are ≤ 512 px.
+        clf = FabricClassifier(_write_weights(self.tmp), device="cpu")
+        self.assertEqual(clf.max_side, 512)
+        big = noise_image((1600, 1200), seed=4)
+        small = big.resize((512, 384), Image.Resampling.BILINEAR)
+        a, b = clf.predict_detailed(big), clf.predict_detailed(small)
+        np.testing.assert_allclose(a["probabilities"], b["probabilities"], atol=1e-5)
+
+    def test_resize_can_be_disabled(self):
+        clf = FabricClassifier(_write_weights(self.tmp), device="cpu", max_side=None)
+        big = noise_image((1600, 1200), seed=4)
+        small = big.resize((512, 384), Image.Resampling.BILINEAR)
+        a, b = clf.predict_detailed(big), clf.predict_detailed(small)
+        self.assertFalse(np.allclose(a["probabilities"], b["probabilities"], atol=1e-5))
 
     def test_patch_config_read_from_checkpoint_and_used(self):
         cfg = {"patch_fraction": 0.2, "min_coverage": 0.9}

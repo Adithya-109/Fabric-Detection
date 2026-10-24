@@ -139,3 +139,25 @@ class TestAppIsLazy(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+from tests.helpers import HAS_TORCH, TORCH_SKIP_REASON  # noqa: E402
+
+
+@unittest.skipUnless(HAS_TORCH, TORCH_SKIP_REASON)
+class TestRealModelEndToEnd(unittest.TestCase):
+    """The real app with the real weights answers a prediction request (what users will run)."""
+
+    def test_predict_sample_with_real_weights(self):
+        app = create_app()
+        client = app.test_client()
+        r = client.post("/api/predict", json={"sample_id": "denim_sample"})
+        self.assertEqual(r.status_code, 200, r.get_data(as_text=True)[:500])
+        body = r.get_json()
+        self.assertEqual(len(body["top_3"]), 3)
+        self.assertEqual(len(body["patches"]), 7)
+        self.assertIn(body["prediction"]["name"], [c["name"] for c in client.get("/api/classes").get_json()["classes"]])
+        health = client.get("/api/health").get_json()
+        self.assertEqual(health["status"], "online")
+        page = client.get("/")
+        self.assertEqual(page.status_code, 200)
