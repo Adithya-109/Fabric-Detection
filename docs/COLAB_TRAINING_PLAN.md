@@ -89,7 +89,9 @@ All of it currently lives in `DATASETS/` on the original Windows machine — **n
    Never trained on. Covers dresses only, so per-class support will be uneven — report it.
 
 > The new split changes the test set, so Attempt 309's 43% is **not comparable** to new numbers.
-> First job on the new split: re-evaluate the existing `fabric_clf_best.pt` → that is the new baseline.
+> **Do not evaluate the existing weights on the new split:** it would move images those weights were
+> trained on into val/test and inflate the score. Old weights are evaluated only on the iMaterialist
+> folders (their split is fixed on disk) — see Phase 1. The new split is the baseline for *new* runs only.
 
 ---
 
@@ -152,7 +154,7 @@ full-run ranking (baseline vs best) — if it doesn't, proxies are dropped.
 
 | Phase | Runs | What | Decision gate |
 |---|---|---|---|
-| **1. Baselines, no training** | ~1 h GPU | Re-evaluate existing `best.pt` on the new split; prior-correction sweep (`prior_sweep.py`); fit temperature | Ship corrected model to the Mac web app immediately |
+| **1. Recalibration, no training** (EXP-401) | ~30–60 min, Mac is enough | `recalibrate.py` on iMaterialist val/test: baseline vs prior correction + temperature | Ship corrected model to the Mac web app immediately |
 | **2. New-hardware control** | 1 full | Legacy recipe (double balancing kept) but batch 64 + AMP + new split. Isolates the hardware/batch effect | This is the control every later run is compared to |
 | **3. Fix imbalance** | 3 proxy + 1 full | (a) natural sampling + logit-adjusted loss, (b) √-sampling + logit-adjusted loss, (c) √-sampling + plain CE | Pick by val macro-F1 with worst-recall ≥ 0.40 as tie-breaker |
 | **4. Input pipeline** | 3 proxy + 1 full | (a) `PATCH_FRACTION=0.2` + `PATCH_MIN_COVERAGE=0.9`; (b) training patches per image; (c) augmentation: RandomResizedCrop scale, light colour jitter only (colour is informative: denim) | Keep only what helps val |
