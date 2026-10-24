@@ -1,0 +1,57 @@
+name: external-eval
+
+# Evaluates the current weights (before vs after recalibration) on an external,
+# never-trained-on dataset. Results are committed to the `results/external-eval` branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["eval/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt datasets huggingface_hub
+      - name: Prepare external dataset
+        run: |
+          python -m tools.prepare_external_eval --out data/external \
+            --sheet reports/external_eval/sample_eval_images.png \
+            --summary reports/external_eval/dataset_summary.json
+      - name: "A: target priors from training data (what the app would ship)"
+        run: |
+          python -m backend.fabric_classifier.training.recalibrate \
+            --data-dir data/external --select-split calib --test-split eval \
+            --train-counts-json imaterialist_processed_counts.json --target-priors train-counts \
+            --out runs/ext_A --device cpu --num-workers 2 --batch-size 16 --report-test
+      - name: "B: target priors estimated from the calib half (upper bound)"
+        run: |
+          mkdir -p runs/ext_B && cp runs/ext_A/logits_*.npz runs/ext_B/
+          python -m backend.fabric_classifier.training.recalibrate \
+            --data-dir data/external --select-split calib --test-split eval \
+            --train-counts-json imaterialist_processed_counts.json --target-priors select-split \
+            --out runs/ext_B --device cpu --num-workers 2 --batch-size 16 --report-test
+      - name: Publish results to results/external-eval branch
+        run: |
+          for v in A B; do
+            mkdir -p reports/external_eval/$v
+            cp runs/ext_$v/recalibration_report.md runs/ext_$v/recalibration_results.json reports/external_eval/$v/
+          done
+          cp runs/ext_A/logits_*.npz reports/external_eval/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B results/external-eval
+          git add -f reports/external_eval
+          git commit -m "External evaluation results for ${GITHUB_SHA::7}"
+          git push -f origin results/external-eval

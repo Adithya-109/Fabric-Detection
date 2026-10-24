@@ -28,3 +28,7 @@ backend/fabric_classifier/training/resource_manager.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Local evaluation outputs
+runs/
+data/external/

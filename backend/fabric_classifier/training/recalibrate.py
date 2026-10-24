@@ -69,6 +69,14 @@ def list_split(root: str, split: str, class_names, limit_per_class: int | None =
     return [paths[i] for i in order], np.asarray(labels, dtype=np.int64)[order]
 
 
+def load_train_counts_json(path: str, class_names) -> np.ndarray:
+    """Per-class training counts from JSON: ``{"classes": {name: n}}`` or a flat ``{name: n}``."""
+    with open(path) as f:
+        data = json.load(f)
+    table = data.get("classes", data) if isinstance(data, dict) else {}
+    return np.array([int(table.get(name, 0)) for name in class_names], dtype=np.int64)
+
+
 def count_split(root: str, split: str, class_names) -> np.ndarray:
     counts = np.zeros(len(class_names), dtype=np.int64)
     for idx, name in enumerate(class_names):
@@ -271,8 +279,17 @@ def main(argv=None):
     default_weights = os.path.join(os.path.dirname(os.path.dirname(__file__)), "weights", "fabric_clf_best.pt")
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--weights", default=default_weights)
-    p.add_argument("--imaterialist-dir", default=os.environ.get("FABRIC_IMATERIALIST_DIR"),
-                   help="folder containing train/ val/ test/ (or set FABRIC_IMATERIALIST_DIR)")
+    p.add_argument("--imaterialist-dir", "--data-dir", dest="imaterialist_dir",
+                   default=os.environ.get("FABRIC_IMATERIALIST_DIR"),
+                   help="folder containing <split>/<Class>/ images (or set FABRIC_IMATERIALIST_DIR)")
+    p.add_argument("--select-split", default="val", help="split used to choose settings")
+    p.add_argument("--test-split", default="test", help="split reported once with --report-test")
+    p.add_argument("--train-counts-json", default=None,
+                   help="per-class training counts (JSON) instead of counting a train/ folder")
+    p.add_argument("--target-priors", default="select-split", choices=["select-split", "train-counts"],
+                   help="deployment class frequencies: estimated from the select split, or the training data's")
+    p.add_argument("--prior-smoothing", type=float, default=1.0,
+                   help="add-k smoothing when estimating priors from the select split (no class gets 0)")
     p.add_argument("--out", default="runs/recalibration", help="where logits cache and reports go")
     p.add_argument("--device", default="auto", help="auto | cuda | mps | cpu")
     p.add_argument("--batch-size", type=int, default=16)
@@ -309,11 +326,19 @@ def main(argv=None):
         save_logits(cache_path, logits, labels, paths, meta)
         return logits, labels
 
-    val_logits, val_y = get_logits("val")
+    sel, tst = args.select_split, args.test_split
+    val_logits, val_y = get_logits(sel)
     n = len(names)
-    train_counts = count_split(args.imaterialist_dir, "train", names)
+    if args.train_counts_json:
+        train_counts = load_train_counts_json(args.train_counts_json, names)
+    else:
+        train_counts = count_split(args.imaterialist_dir, "train", names)
     train_priors = effective_training_prior(train_counts, args.sampler_power, not args.unweighted_loss)
-    target_priors = np.bincount(val_y, minlength=n) / len(val_y)
+    if args.target_priors == "train-counts":
+        target_priors = train_counts / train_counts.sum()
+    else:
+        smoothed = np.bincount(val_y, minlength=n) + args.prior_smoothing
+        target_priors = smoothed / smoothed.sum()
 
     results = sweep_prior_correction(val_logits, val_y, names, train_priors, target_priors)
     best = best_result(results, args.metric, args.min_worst_recall)
@@ -324,11 +349,12 @@ def main(argv=None):
 
     report = ["# Recalibration report", "",
               f"Weights: `{os.path.basename(args.weights)}` ({fingerprint}) · data: `{args.imaterialist_dir}`", "",
+              f"Settings chosen on `{sel}`; target class frequencies from: {args.target_priors}.", "",
               "Before = the model as it is today (argmax, no correction).", ""]
     all_results = {"settings": settings, "sweep": [{"strength": r["strength"], **{k: r["metrics"][k] for k in
                    ("top1_accuracy", "macro_f1", "worst_class_recall")}} for r in results]}
-    for split, (logits, y) in [("val", (val_logits, val_y))] + (
-            [("test", get_logits("test"))] if args.report_test else []):
+    for split, (logits, y) in [(sel, (val_logits, val_y))] + (
+            [(tst, get_logits(tst))] if args.report_test else []):
         before = _evaluate(logits, y, names, train_priors, target_priors, 0.0, 1.0)
         after = _evaluate(logits, y, names, train_priors, target_priors, strength, temperature)
         report.append(render_report(split, before, after, names, settings, len(y)))
@@ -354,7 +380,8 @@ def main(argv=None):
             "target_priors": target_priors.tolist(),
             "train_priors": train_priors.tolist(),
             "strength": strength,
-            "selected_on": "imaterialist val",
+            "selected_on": f"{args.imaterialist_dir} [{sel}]",
+            "target_priors_from": args.target_priors,
             "metric": args.metric,
             "weights_fingerprint": fingerprint,
         }
