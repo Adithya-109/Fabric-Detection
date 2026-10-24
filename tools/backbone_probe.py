@@ -56,6 +56,19 @@ def zero_shot_scores(image_embeddings, text_embeddings_per_class, scale: float =
     return scale * img @ cls.T
 
 
+def to_numpy(x) -> np.ndarray:
+    """Tensor, ndarray or a transformers output object (uses ``pooler_output``) → ndarray."""
+    if isinstance(x, np.ndarray):
+        return x
+    if hasattr(x, "pooler_output") and x.pooler_output is not None:
+        return to_numpy(x.pooler_output)
+    if hasattr(x, "numpy"):
+        t = x.detach() if hasattr(x, "detach") else x
+        t = t.cpu() if hasattr(t, "cpu") else t
+        return t.numpy()
+    raise TypeError(f"cannot convert {type(x).__name__} to a NumPy array")
+
+
 def json_safe(obj):
     """Recursively convert NumPy scalars/arrays to JSON types; drops bulky ``scores`` entries."""
     if isinstance(obj, dict):
@@ -341,7 +354,8 @@ class HFVision:  # pragma: no cover - needs transformers + weight download
             for imgs in _batched(paths, 16):
                 inputs = self.processor(images=imgs, return_tensors="pt")
                 if self.kind == "clip":
-                    out.append(self.model.get_image_features(**inputs).numpy())
+                    pooled = self.model.vision_model(pixel_values=inputs["pixel_values"]).pooler_output
+                    out.append(to_numpy(self.model.visual_projection(pooled)))
                 else:
                     h = self.model(**inputs).last_hidden_state
                     out.append(torch.cat([h[:, 0], h[:, 1:].mean(1)], dim=1).numpy())
@@ -352,7 +366,8 @@ class HFVision:  # pragma: no cover - needs transformers + weight download
 
         with torch.no_grad():
             tok = self.tokenizer(list(texts), padding=True, return_tensors="pt")
-            return self.model.get_text_features(**tok).numpy()
+            pooled = self.model.text_model(**tok).pooler_output
+            return to_numpy(self.model.text_projection(pooled))
 
 
 class OurModel:  # pragma: no cover - needs torch + weights

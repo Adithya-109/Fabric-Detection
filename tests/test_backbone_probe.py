@@ -68,6 +68,34 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(int(scores.argmax()), 0)
 
 
+class TestToNumpy(unittest.TestCase):
+    def test_plain_array_passes_through(self):
+        np.testing.assert_array_equal(bp.to_numpy(np.ones((2, 3))), np.ones((2, 3)))
+
+    def test_output_object_with_pooler_output_is_unwrapped(self):
+        class Out:  # mimics transformers' BaseModelOutputWithPooling
+            pooler_output = np.arange(6.0).reshape(2, 3)
+
+        np.testing.assert_array_equal(bp.to_numpy(Out()), np.arange(6.0).reshape(2, 3))
+
+    def test_object_with_numpy_method_is_converted(self):
+        class T:
+            def detach(self):
+                return self
+
+            def cpu(self):
+                return self
+
+            def numpy(self):
+                return np.zeros(2)
+
+        np.testing.assert_array_equal(bp.to_numpy(T()), np.zeros(2))
+
+    def test_unknown_object_raises_clear_error(self):
+        with self.assertRaises(TypeError):
+            bp.to_numpy(object())
+
+
 class TestHead(unittest.TestCase):
     def test_head_learns_separable_data_and_returns_scores_per_class(self):
         rng = np.random.default_rng(3)
