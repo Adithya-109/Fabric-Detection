@@ -1,0 +1,39 @@
+name: train-clip-head
+
+# Train the CLIP linear head used by the web app.
+# Results are committed to the `results/clip-head` branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["head/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 170
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt datasets huggingface_hub transformers
+      - name: Prepare external dataset
+        run: python -m tools.prepare_external_eval --out data/external
+      - name: Train CLIP head
+        run: python -m tools.train_clip_head --data-dir data/external --out reports/clip_head
+      - name: Publish results to results/clip-head branch
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B results/clip-head
+          git add -f reports/clip_head
+          git commit -m "CLIP head for ${GITHUB_SHA::7}" || exit 0
+          git push -f origin results/clip-head

@@ -13,6 +13,7 @@ from tests import ROOT
 LIGHT_MODULES = [
     "backend.fabric_classifier.classes",
     "backend.fabric_classifier.postprocess",
+    "backend.fabric_classifier.clip_head",
     "backend.fabric_classifier.training.balancing",
     "backend.fabric_classifier.training.splits",
     "backend.fabric_classifier.training.metrics",

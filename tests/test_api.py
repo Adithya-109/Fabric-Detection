@@ -149,6 +149,13 @@ class TestRealModelEndToEnd(unittest.TestCase):
     """The real app with the real weights answers a prediction request (what users will run)."""
 
     def test_predict_sample_with_real_weights(self):
+        import os
+        from unittest import mock
+
+        with mock.patch.dict(os.environ, {"FABRIC_MODEL": "efficientnet"}):  # legacy weights, no CLIP download
+            self._check()
+
+    def _check(self):
         app = create_app()
         client = app.test_client()
         r = client.post("/api/predict", json={"sample_id": "denim_sample"})

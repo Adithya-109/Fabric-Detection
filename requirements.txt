@@ -12,3 +12,4 @@ tqdm>=4.65
 
 # Tests
 pytest>=7.4
+transformers>=4.40

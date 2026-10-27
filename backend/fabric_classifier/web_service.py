@@ -7,7 +7,7 @@ import torch
 from PIL import Image
 
 from .classes import MATERIAL_CLASSES
-from .inference import FabricClassifier
+from .clip_head import DEFAULT_HEAD_PATH, EmbeddingClassifier, choose_model_kind
 from .profiles import FABRIC_PROFILES  # re-exported for backwards compatibility
 
 
@@ -26,28 +26,35 @@ class FabricWebService:
     extracts visual patches, measures detailed latencies, and provides
     complete metrics and textile profiles.
     """
-    def __init__(self, weights_path: str = None, device: str = "cpu"):
-        if weights_path is None:
-            weights_path = os.path.join(
-                os.path.dirname(os.path.dirname(__file__)),
-                "fabric_classifier",
-                "weights",
-                "fabric_clf_best.pt"
-            )
-        
-        self.weights_path = os.path.abspath(weights_path)
+    def __init__(self, weights_path: str = None, device: str = "cpu", classifier=None):
+        """``classifier`` may be injected (tests); otherwise FABRIC_MODEL / available files decide:
+        'clip_head' (CLIP + linear head, the better model) or 'efficientnet' (legacy weights)."""
         self.device = device
-        print(f"[FabricWebService] Initializing with weights: {self.weights_path}")
-        
-        self.classifier = FabricClassifier(self.weights_path, device=self.device)
-        self.class_names = self.classifier.class_names
-        self.temperature = self.classifier.temperature
-        
-        # Determine actual execution device
-        self.active_device_str = "Apple Silicon (CPU - EfficientNet-B0)"
-        if torch.backends.mps.is_available() and self.device == "mps":
-            self.active_device_str = "Apple Silicon Metal (MPS)"
-            
+        if classifier is None:
+            kind = choose_model_kind(os.environ.get("FABRIC_MODEL"), os.path.exists(DEFAULT_HEAD_PATH))
+            if kind == "clip_head":
+                print(f"[FabricWebService] Initializing CLIP + linear head ({DEFAULT_HEAD_PATH})")
+                classifier = EmbeddingClassifier.from_files(DEFAULT_HEAD_PATH, device=device)
+            else:
+                from .inference import FabricClassifier
+
+                if weights_path is None:
+                    weights_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                                "fabric_classifier", "weights", "fabric_clf_best.pt")
+                print(f"[FabricWebService] Initializing EfficientNet-B0 with weights: {weights_path}")
+                classifier = FabricClassifier(os.path.abspath(weights_path), device=device)
+        self.classifier = classifier
+        self.class_names = classifier.class_names
+        self.temperature = classifier.temperature
+        self.is_clip = isinstance(classifier, EmbeddingClassifier)
+        self.weights_path = getattr(classifier, "weights_file", None) or os.path.abspath(weights_path or "")
+
+        if self.is_clip:
+            self.active_device_str = f"CPU ({classifier.model_name})"
+        else:
+            self.active_device_str = "Apple Silicon (CPU - EfficientNet-B0)"
+            if torch.backends.mps.is_available() and self.device == "mps":
+                self.active_device_str = "Apple Silicon Metal (MPS)"
         print(f"[FabricWebService] Service ready on {self.active_device_str}. Classes: {len(self.class_names)}")
 
     def get_system_metrics(self) -> dict:
@@ -60,8 +67,9 @@ class FabricWebService:
             "ram_used_percent": round(mem.percent, 1),
             "ram_available_gb": round(mem.available / (1024 ** 3), 2),
             "cpu_percent": psutil.cpu_percent(interval=None),
-            "model_backbone": "EfficientNet-B0",
-            "classifier_head": "Dropout(0.3) -> Linear(1280->256) -> ReLU -> Dropout(0.2) -> Linear(256->14)",
+            "model_backbone": self.classifier.model_name if self.is_clip else "EfficientNet-B0",
+            "classifier_head": ("Standardise -> multinomial logistic regression (512 -> 14)" if self.is_clip else
+                                "Dropout(0.3) -> Linear(1280->256) -> ReLU -> Dropout(0.2) -> Linear(256->14)"),
             "weights_file": os.path.basename(self.weights_path),
             "num_classes": len(self.class_names),
             "temperature_calibration": self.classifier.temperature,
