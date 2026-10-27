@@ -18,8 +18,10 @@ python run_web.py          # then open http://127.0.0.1:5050
 ```
 
 ## Status
-The current model is an early version (see `docs/IMPROVEMENT_PLAN.md`, `memory/records/EXP-40*.md`):
-on everyday clothing photos it gets roughly 1 in 3 fabrics right. Retraining is planned on Google Colab
+The app uses a **CLIP + linear-head** model (best in EXP-404: ~58% balanced accuracy on everyday clothing
+photos; the old EfficientNet-B0 weights scored ~32%). Set `FABRIC_MODEL=efficientnet` to use the old weights.
+Known limits: the head never saw "Knitted" and has few Corduroy/Suede/Velvet examples. See
+`docs/IMPROVEMENT_PLAN.md`, `memory/records/EXP-40*.md`; a proper retraining is planned on Google Colab
 (`docs/COLAB_TRAINING_PLAN.md`).
 
 ## Tests
