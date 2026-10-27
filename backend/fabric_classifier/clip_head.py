@@ -149,3 +149,14 @@ class ClipEmbedder:  # pragma: no cover - needs torch + transformers + weight do
             inputs = self.processor(images=pil_image.convert("RGB"), return_tensors="pt")
             pooled = self.model.vision_model(pixel_values=inputs["pixel_values"].to(self.device)).pooler_output
             return self.model.visual_projection(pooled).cpu().numpy()[0]
+
+    def embed_texts(self, texts) -> np.ndarray:
+        torch = self.torch
+        if not hasattr(self, "tokenizer"):
+            from transformers import AutoTokenizer
+
+            self.tokenizer = AutoTokenizer.from_pretrained(CLIP_REPO)
+        with torch.no_grad():
+            tok = self.tokenizer(list(texts), padding=True, return_tensors="pt").to(self.device)
+            pooled = self.model.text_model(**tok).pooler_output
+            return self.model.text_projection(pooled).cpu().numpy()

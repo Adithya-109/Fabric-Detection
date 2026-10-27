@@ -1,0 +1,40 @@
+name: sample-check
+
+# Check CLIP head vs zero-shot vs blend on the app samples and held-out photos.
+# Results are committed to the `results/sample-check` branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["sample/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 170
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt datasets huggingface_hub transformers
+      - name: Prepare external dataset
+        run: python -m tools.prepare_external_eval --out data/external
+      - name: Run sample check
+        run: python -m tools.sample_check --data-dir data/external --out reports/sample_check
+      - name: Publish results to results/sample-check branch
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BR=results/sample-check-$(echo "$GITHUB_REF_NAME" | tr '/' '-')
+          git checkout -B "$BR"
+          git add -f reports/sample_check
+          git commit -m "Sample check for ${GITHUB_SHA::7}" || exit 0
+          git push -f origin "$BR"
