@@ -1,0 +1,139 @@
+{
+ "eval_balanced_accuracy": {
+  "0.0": 0.5609864130478696,
+  "0.25": 0.6004309994692002,
+  "0.5": 0.6230809691923405,
+  "0.75": 0.5250959467149756,
+  "1.0": 0.433970752540631
+ },
+ "samples": {
+  "denim_sample.jpg": {
+   "0.0": [
+    "Cotton 54%",
+    "Nylon 18%",
+    "Denim 13%"
+   ],
+   "0.25": [
+    "Denim 39%",
+    "Cotton 28%",
+    "Nylon 16%"
+   ],
+   "0.5": [
+    "Denim 69%",
+    "Cotton 8%",
+    "Nylon 8%"
+   ],
+   "0.75": [
+    "Denim 85%",
+    "Corduroy 6%",
+    "Nylon 3%"
+   ],
+   "1.0": [
+    "Denim 91%",
+    "Corduroy 6%",
+    "Nylon 1%"
+   ],
+   "efficientnet_old": [
+    "Linen 36%",
+    "Knitted 34%",
+    "Corduroy 11%"
+   ]
+  },
+  "poly_cotton_check.jpeg": {
+   "0.0": [
+    "Polyester 43%",
+    "Linen 40%",
+    "Cotton 5%"
+   ],
+   "0.25": [
+    "Polyester 41%",
+    "Linen 40%",
+    "Cotton 8%"
+   ],
+   "0.5": [
+    "Linen 37%",
+    "Polyester 37%",
+    "Cotton 14%"
+   ],
+   "0.75": [
+    "Linen 33%",
+    "Polyester 31%",
+    "Cotton 22%"
+   ],
+   "1.0": [
+    "Cotton 33%",
+    "Linen 27%",
+    "Polyester 25%"
+   ],
+   "efficientnet_old": [
+    "Linen 80%",
+    "Silk 6%",
+    "Nylon 4%"
+   ]
+  },
+  "silk_sample.jpg": {
+   "0.0": [
+    "Velvet 30%",
+    "Polyester 17%",
+    "Silk 11%"
+   ],
+   "0.25": [
+    "Velvet 27%",
+    "Polyester 22%",
+    "Satin 17%"
+   ],
+   "0.5": [
+    "Satin 27%",
+    "Polyester 25%",
+    "Velvet 21%"
+   ],
+   "0.75": [
+    "Satin 40%",
+    "Polyester 25%",
+    "Velvet 14%"
+   ],
+   "1.0": [
+    "Satin 53%",
+    "Polyester 23%",
+    "Velvet 9%"
+   ],
+   "efficientnet_old": [
+    "Velvet 49%",
+    "Leather 22%",
+    "Suede 6%"
+   ]
+  },
+  "wool_knit_sample.jpg": {
+   "0.0": [
+    "Wool 50%",
+    "Nylon 26%",
+    "Cotton 8%"
+   ],
+   "0.25": [
+    "Wool 61%",
+    "Nylon 17%",
+    "Cotton 8%"
+   ],
+   "0.5": [
+    "Wool 68%",
+    "Nylon 10%",
+    "Cotton 7%"
+   ],
+   "0.75": [
+    "Wool 68%",
+    "Corduroy 8%",
+    "Cotton 6%"
+   ],
+   "1.0": [
+    "Knitted 66%",
+    "Wool 20%",
+    "Corduroy 7%"
+   ],
+   "efficientnet_old": [
+    "Fleece 49%",
+    "Suede 35%",
+    "Corduroy 5%"
+   ]
+  }
+ }
+}
