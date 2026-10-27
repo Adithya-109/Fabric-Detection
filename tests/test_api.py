@@ -168,3 +168,38 @@ class TestRealModelEndToEnd(unittest.TestCase):
         self.assertEqual(health["status"], "online")
         page = client.get("/")
         self.assertEqual(page.status_code, 200)
+
+
+class TestNoStaleCaching(unittest.TestCase):
+    """Colab reloads must never show an old page or script from the browser cache."""
+
+    def setUp(self):
+        self.client = create_app(service=FakeService()).test_client()
+
+    def test_page_and_static_files_are_not_cached(self):
+        for url in ("/", "/static/js/app.js", "/static/css/style.css"):
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200, url)
+            self.assertIn("no-store", r.headers.get("Cache-Control", ""), url)
+            r.close()
+
+    def test_api_responses_not_cached(self):
+        self.assertIn("no-store", self.client.get("/api/health").headers.get("Cache-Control", ""))
+
+
+class TestColabNotebook(unittest.TestCase):
+    def setUp(self):
+        import json
+        import os
+
+        from tests import ROOT
+
+        nb = json.load(open(os.path.join(ROOT, "notebooks", "run_web_app.ipynb")))
+        self.code = "\n".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code")
+
+    def test_code_is_force_updated_not_just_pulled(self):
+        self.assertRegex(self.code, r"git reset [^\n]*--hard")
+
+    def test_old_server_is_stopped_before_starting_a_new_one(self):
+        self.assertIn("run_web.py", self.code.split("Popen")[0])  # a kill step mentions the server before Popen
+        self.assertRegex(self.code, r"pkill|fuser")

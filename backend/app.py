@@ -183,6 +183,13 @@ def create_app(service=None, service_factory=None) -> Flask:
             traceback.print_exc()
             return jsonify({"error": f"Inference failed: {exc}"}), 500
 
+
+    @app.after_request
+    def _no_cache(response):
+        # Always serve the current page/scripts (a reloaded Colab must not show a cached old UI).
+        response.headers["Cache-Control"] = "no-store, max-age=0"
+        return response
+
     return app
 
 
