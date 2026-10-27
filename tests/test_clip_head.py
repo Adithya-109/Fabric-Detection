@@ -108,10 +108,27 @@ class TestEmbeddingClassifier(unittest.TestCase):
         d = self.clf.predict_detailed(self.image)
         self.assertEqual(set(d), {"top3", "probabilities", "patches", "timing"})
         self.assertAlmostEqual(float(np.sum(d["probabilities"])), 1.0, places=6)
-        self.assertEqual(len(d["patches"]), 1)  # the whole photo the model looked at
+        self.assertEqual(len(d["patches"]), 7)  # crops shown for inspection
         self.assertIn("patch_ms", d["timing"])
         self.assertIn("model_ms", d["timing"])
         self.assertEqual(d["top3"], self.clf.predict(self.image))
+
+    def test_seven_inspection_patches_are_images_and_model_sees_whole_photo_once(self):
+        self.embedder.sizes.clear()
+        d = self.clf.predict_detailed(self.image)
+        self.assertTrue(all(isinstance(p, Image.Image) for p in d["patches"]))
+        self.assertEqual(len(self.embedder.sizes), 1)  # one embedding of the whole (resized) photo
+        self.assertEqual(self.embedder.sizes[0], (512, 398))
+
+    def test_patches_are_deterministic_for_same_image(self):
+        a = self.clf.predict_detailed(self.image)["patches"]
+        b = self.clf.predict_detailed(self.image)["patches"]
+        for pa, pb in zip(a, b):
+            np.testing.assert_array_equal(np.asarray(pa), np.asarray(pb))
+
+    def test_patches_still_returned_for_plain_and_tiny_images(self):
+        for img in (Image.new("RGB", (60, 40), (120, 90, 60)), Image.new("RGBA", (300, 300), (255, 255, 255, 255))):
+            self.assertEqual(len(self.clf.predict_detailed(img)["patches"]), 7)
 
     def test_image_resized_before_embedding_and_rgb(self):
         self.clf.predict(self.image.convert("RGBA"))
@@ -169,7 +186,7 @@ class TestWebServiceWithClipHead(unittest.TestCase):
         self.assertEqual(out["prediction"]["name"], "Denim")
         self.assertEqual(len(out["top_3"]), 3)
         self.assertEqual(len(out["all_classes"]), len(NAMES))
-        self.assertEqual(len(out["patches"]), 1)
+        self.assertEqual(len(out["patches"]), 7)
         self.assertIn("CLIP", out["metrics"]["model_backbone"])
         client = create_app(service=service).test_client()
         self.assertEqual(client.get("/api/health").get_json()["status"], "online")

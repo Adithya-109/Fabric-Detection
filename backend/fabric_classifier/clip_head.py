@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 import time
 import warnings
+import zlib
 from dataclasses import dataclass
 
 import numpy as np
@@ -16,12 +17,17 @@ from PIL import Image
 
 from .classes import MATERIAL_CLASSES
 from .postprocess import format_top_k, softmax
-from .training.dataset import resize_max_side
+from .training.dataset import extract_patches, resize_max_side
 
 DEFAULT_HEAD_PATH = os.path.join(os.path.dirname(__file__), "weights", "clip_head.npz")
 CLIP_REPO = "openai/clip-vit-base-patch16"
 DEFAULT_MAX_SIDE = 512
 _UNSEEN = -1e9  # intercept for classes absent from the training data → probability 0
+
+
+def _stable_image_seed(image: Image.Image) -> int:
+    thumb = image.convert("RGB").resize((64, 64), Image.Resampling.BILINEAR)
+    return zlib.crc32(thumb.tobytes()) & 0xFFFFFFFF
 
 
 def l2_normalize(X) -> np.ndarray:
@@ -112,7 +118,10 @@ class EmbeddingClassifier:
     def predict_detailed(self, pil_image: Image.Image, n_patches: int = 7) -> dict:
         start = time.perf_counter()
         image = resize_max_side(pil_image.convert("RGB"), self.max_side)
-        view = image.resize((224, 224), Image.Resampling.BILINEAR)  # what the UI shows as the analysed crop
+        # Seven interior crops are returned for inspection in the UI. The prediction itself is made
+        # from the whole (resized) photo: that is what the head was trained and validated on.
+        patches = extract_patches(image, n_patches=n_patches, rng=np.random.default_rng(_stable_image_seed(image)),
+                                  relax_if_needed=True)
         prep_ms = (time.perf_counter() - start) * 1000
 
         start = time.perf_counter()
@@ -121,7 +130,7 @@ class EmbeddingClassifier:
         return {
             "top3": format_top_k(probs, self.class_names, k=3),
             "probabilities": probs,
-            "patches": [view],
+            "patches": patches,
             "timing": {"patch_ms": prep_ms, "model_ms": model_ms},
         }
 

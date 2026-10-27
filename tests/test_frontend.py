@@ -62,6 +62,13 @@ class TestEmptyInitialState(unittest.TestCase):
         self.assertIn("executeClassification()", body)
 
 
+class TestPatchCard(unittest.TestCase):
+    def test_seven_patch_card_restored_with_honest_caption(self):
+        self.assertIn("7-Patch Multi-Crop", HTML)
+        self.assertIn("prediction is made from the whole image", HTML)
+        self.assertIn("Patch ${idx}", JS)
+
+
 class TestModelAgnosticCopy(unittest.TestCase):
     def test_pipeline_text_not_tied_to_one_model(self):
         self.assertNotIn("EfficientNet", JS)

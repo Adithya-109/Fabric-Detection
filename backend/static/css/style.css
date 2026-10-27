@@ -1939,3 +1939,5 @@ body.hero-upload-hovered .orb-3 {
 .dropzone:not(.has-image) .preview-overlay { display: none; }
 .dropzone.has-image .dropzone-empty { display: none; }
 .badge-idle { background: transparent; color: var(--text-f); border: 1px solid var(--border); }
+
+.patch-note { margin: 0 0 10px; font-size: 0.74rem; color: var(--text-f); }

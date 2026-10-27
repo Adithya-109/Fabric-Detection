@@ -713,8 +713,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const idx = p.patch_index || i + 1;
       return `
         <div class="patch-item" data-index="${i}">
-          <img src="${src}" alt="Patch ${idx}" title="Analyzed region #${idx} (${p.width || 224}×${p.height || 224})">
-          <span class="patch-label">Region ${idx}</span>
+          <img src="${src}" alt="Patch ${idx}" title="Fabric crop #${idx} (${p.width || 224}×${p.height || 224})">
+          <span class="patch-label">Patch ${idx}</span>
         </div>`;
     }).join('');
 

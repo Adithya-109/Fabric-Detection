@@ -1,4 +1,4 @@
-# Fabric-Detection
+# Fabric Classifier
 
 Identify the fabric of a garment (Cotton, Polyester, Silk, Denim, Linen, Wool, Leather, Velvet,
 Corduroy, Fleece, Nylon, Satin, Knitted, Suede) from an ordinary photo of clothing.

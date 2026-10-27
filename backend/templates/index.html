@@ -392,7 +392,7 @@
         <div class="d-card card-patches hover-scale-card" id="card-patches">
           <div class="d-card-hdr">
             <div class="patches-hdr-left">
-              <span class="d-card-title">Analyzed Regions</span>
+              <span class="d-card-title">7-Patch Multi-Crop</span>
             </div>
             <div class="slider-ctrl">
               <button class="slider-btn" id="patch-prev" aria-label="Previous patches">&#8249;</button>
@@ -400,6 +400,7 @@
               <button class="slider-btn" id="patch-next" aria-label="Next patches">&#8250;</button>
             </div>
           </div>
+          <p class="patch-note">Crops are shown for inspection. The prediction is made from the whole image.</p>
           <div class="patch-viewport">
             <div class="patch-track" id="patch-track">
               <!-- Dynamically populated or rendered patches -->
@@ -409,7 +410,7 @@
                   <circle cx="8.5" cy="8.5" r="1.5"/>
                   <polyline points="21 15 16 10 5 21"/>
                 </svg>
-                <p>The image regions the model analyzed will appear here</p>
+                <p>Run a classification to see the 7 cropped textures<br><small>The prediction is made from the whole image; the crops are shown for inspection.</small></p>
               </div>
             </div>
           </div>
