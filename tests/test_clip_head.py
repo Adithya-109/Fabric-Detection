@@ -173,3 +173,14 @@ class TestWebServiceWithClipHead(unittest.TestCase):
         self.assertIn("CLIP", out["metrics"]["model_backbone"])
         client = create_app(service=service).test_client()
         self.assertEqual(client.get("/api/health").get_json()["status"], "online")
+
+
+class TestShippedHead(unittest.TestCase):
+    def test_shipped_head_loads_and_matches_contract(self):
+        from backend.fabric_classifier.classes import MATERIAL_CLASSES
+
+        head = ch.LinearHead.load(ch.DEFAULT_HEAD_PATH)
+        self.assertEqual(head.class_names, MATERIAL_CLASSES)
+        self.assertEqual(head.mean.shape[0], 512)
+        p = head.probabilities(np.random.default_rng(0).normal(size=(3, 512)))
+        np.testing.assert_allclose(p.sum(1), 1.0, atol=1e-9)
