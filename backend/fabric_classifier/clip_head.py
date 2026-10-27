@@ -22,6 +22,14 @@ from .training.dataset import extract_patches, resize_max_side
 DEFAULT_HEAD_PATH = os.path.join(os.path.dirname(__file__), "weights", "clip_head.npz")
 CLIP_REPO = "openai/clip-vit-base-patch16"
 DEFAULT_MAX_SIDE = 512
+DEFAULT_BLEND = 0.5  # weight of CLIP text-prompt scoring vs the trained head (chosen on held-out photos)
+DEFAULT_TEMPLATES = (
+    "a photo of a {} garment",
+    "a photo of clothing made of {} fabric",
+    "a person wearing a {} piece of clothing",
+    "a close-up of {} cloth",
+)
+CLASS_WORDS = {"Fleece": "fleece", "Knitted": "knitted"}  # wording used in prompts when it differs from the name
 _UNSEEN = -1e9  # intercept for classes absent from the training data → probability 0
 
 
@@ -34,6 +42,27 @@ def l2_normalize(X) -> np.ndarray:
     X = np.asarray(X, dtype=np.float64)
     norm = np.linalg.norm(X, axis=-1, keepdims=True)
     return np.divide(X, norm, out=np.zeros_like(X), where=norm > 0)
+
+
+def build_prompts(class_names, templates=DEFAULT_TEMPLATES) -> dict:
+    return {n: [t.format(CLASS_WORDS.get(n, n.lower())) for t in templates] for n in class_names}
+
+
+def zero_shot_scores(image_embeddings, text_embeddings_per_class, scale: float = 100.0) -> np.ndarray:
+    """Cosine similarity between each image and each class's mean (normalised) prompt embedding."""
+    img = l2_normalize(image_embeddings)
+    cls = l2_normalize(np.stack([l2_normalize(t).mean(axis=0) for t in text_embeddings_per_class]))
+    return scale * img @ cls.T
+
+
+def blend_from_env(value) -> float:
+    """FABRIC_BLEND: 0 = trained head only, 1 = zero-shot only. Unset → DEFAULT_BLEND."""
+    if value is None or str(value).strip() == "":
+        return DEFAULT_BLEND
+    w = float(value)
+    if not 0.0 <= w <= 1.0:
+        raise ValueError(f"FABRIC_BLEND must be between 0 and 1, got {value!r}")
+    return w
 
 
 def choose_model_kind(env_value, head_exists: bool) -> str:
@@ -101,9 +130,17 @@ class LinearHead:
 class EmbeddingClassifier:
     """Drop-in for FabricClassifier: ``predict`` / ``predict_detailed`` with the same outputs."""
 
-    model_name = "CLIP ViT-B/16 + linear head"
+    model_name = "CLIP ViT-B/16 + trained head"
 
-    def __init__(self, embedder, head: LinearHead, max_side=DEFAULT_MAX_SIDE, weights_file: str = "clip_head.npz"):
+    def __init__(self, embedder, head: LinearHead, max_side=DEFAULT_MAX_SIDE, weights_file: str = "clip_head.npz",
+                 blend: float = 0.0):
+        """``blend`` mixes (in log-probability space) the trained head with CLIP's zero-shot text scoring.
+        It needs ``embedder.embed_texts``; 0 disables it."""
+        if not 0.0 <= blend <= 1.0:
+            raise ValueError(f"blend must be between 0 and 1, got {blend}")
+        if blend > 0 and not hasattr(embedder, "embed_texts"):
+            raise ValueError("blend > 0 requires an embedder with embed_texts (a CLIP text encoder)")
+        self.blend, self._text_embeddings = blend, None
         self.embedder, self.head, self.max_side = embedder, head, max_side
         self.class_names = list(head.class_names)
         self.temperature = 1.0
@@ -111,9 +148,30 @@ class EmbeddingClassifier:
         self.weights_file = weights_file
 
     @classmethod
-    def from_files(cls, head_path: str = DEFAULT_HEAD_PATH, device: str = "cpu", max_side=DEFAULT_MAX_SIDE):
+    def from_files(cls, head_path: str = DEFAULT_HEAD_PATH, device: str = "cpu", max_side=DEFAULT_MAX_SIDE,
+                   blend=None):
         head = LinearHead.load(head_path)
-        return cls(ClipEmbedder(device=device), head, max_side=max_side, weights_file=os.path.basename(head_path))
+        w = blend_from_env(os.environ.get("FABRIC_BLEND")) if blend is None else blend
+        return cls(ClipEmbedder(device=device), head, max_side=max_side, weights_file=os.path.basename(head_path),
+                   blend=w)
+
+    def _class_text_embeddings(self) -> list:
+        if self._text_embeddings is None:
+            prompts = build_prompts(self.class_names)
+            k = len(next(iter(prompts.values())))
+            emb = np.asarray(self.embedder.embed_texts([p for n in self.class_names for p in prompts[n]]))
+            self._text_embeddings = [emb[i * k:(i + 1) * k] for i in range(len(self.class_names))]
+        return self._text_embeddings
+
+    def _probabilities(self, embedding) -> np.ndarray:
+        head_probs = self.head.probabilities(embedding)
+        if self.blend <= 0:
+            return head_probs[0]
+        zs = zero_shot_scores(np.atleast_2d(embedding), self._class_text_embeddings())
+        zs = zs - zs.max(axis=1, keepdims=True)
+        log_zs = zs - np.log(np.exp(zs).sum(axis=1, keepdims=True))
+        mixed = (1 - self.blend) * np.log(head_probs + 1e-12) + self.blend * log_zs
+        return softmax(mixed)[0]
 
     def predict_detailed(self, pil_image: Image.Image, n_patches: int = 7) -> dict:
         start = time.perf_counter()
@@ -125,7 +183,7 @@ class EmbeddingClassifier:
         prep_ms = (time.perf_counter() - start) * 1000
 
         start = time.perf_counter()
-        probs = self.head.probabilities(self.embedder.embed(image))[0]
+        probs = self._probabilities(self.embedder.embed(image))
         model_ms = (time.perf_counter() - start) * 1000
         return {
             "top3": format_top_k(probs, self.class_names, k=3),

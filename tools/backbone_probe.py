@@ -22,40 +22,11 @@ import warnings
 
 import numpy as np
 
+from backend.fabric_classifier.clip_head import (  # noqa: F401  (re-exported: shared with the app)
+    CLASS_WORDS, DEFAULT_TEMPLATES, build_prompts, l2_normalize, zero_shot_scores)
 from backend.fabric_classifier.training.metrics import compute_classification_metrics
 
-DEFAULT_TEMPLATES = (
-    "a photo of a {} garment",
-    "a photo of clothing made of {} fabric",
-    "a person wearing a {} piece of clothing",
-    "a close-up of {} cloth",
-)
-
-# Words CLIP sees for each contract class (Knitted/Fleece etc. need a bit more than the label).
-CLASS_WORDS = {
-    "Fleece": "fleece",
-    "Knitted": "knitted",
-}
-
-
 # ----------------------------------------------------------------------------- helpers
-def l2_normalize(X) -> np.ndarray:
-    X = np.asarray(X, dtype=np.float64)
-    norm = np.linalg.norm(X, axis=-1, keepdims=True)
-    return np.divide(X, norm, out=np.zeros_like(X), where=norm > 0)
-
-
-def build_prompts(class_names, templates=DEFAULT_TEMPLATES) -> dict:
-    return {n: [t.format(CLASS_WORDS.get(n, n.lower())) for t in templates] for n in class_names}
-
-
-def zero_shot_scores(image_embeddings, text_embeddings_per_class, scale: float = 100.0) -> np.ndarray:
-    """Cosine similarity between each image and each class's mean (normalised) prompt embedding."""
-    img = l2_normalize(image_embeddings)
-    cls = l2_normalize(np.stack([l2_normalize(t).mean(axis=0) for t in text_embeddings_per_class]))
-    return scale * img @ cls.T
-
-
 def to_numpy(x) -> np.ndarray:
     """Tensor, ndarray or a transformers output object (uses ``pooler_output``) → ndarray."""
     if isinstance(x, np.ndarray):

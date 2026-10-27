@@ -146,6 +146,83 @@ class TestEmbeddingClassifier(unittest.TestCase):
         self.assertEqual(self.clf.predict(self.image), self.clf.predict(self.image))
 
 
+class TextEmbedder(FakeEmbedder):
+    """Fake CLIP: text embedding = class centre when the prompt names the class."""
+
+    def __init__(self, centres, vec, names=NAMES):
+        super().__init__(vec=vec)
+        self.centres, self.names, self.text_calls = centres, names, 0
+
+    def embed_texts(self, texts):
+        self.text_calls += 1
+        out = []
+        for t in texts:
+            hit = [i for i, n in enumerate(self.names) if n.lower() in t.lower()]
+            out.append(self.centres_for(hit[0]) if hit else np.zeros(self.vec.shape[0]))
+        return np.stack(out)
+
+    def centres_for(self, i):
+        return self.centres[i]
+
+
+class TestZeroShotBlend(unittest.TestCase):
+    def setUp(self):
+        X, y, centres = make_data()
+        rng = np.random.default_rng(5)
+        self.centres = np.vstack([centres, rng.normal(size=(1, centres.shape[1])) * 3])  # + Knitted
+        self.head = ch.LinearHead.fit(X, y, NAMES, C=0.1)
+
+    def clf(self, blend, vec):
+        emb = TextEmbedder(self.centres, vec)
+        return ch.EmbeddingClassifier(emb, self.head, blend=blend), emb
+
+    def probs(self, clf):
+        return clf.predict_detailed(noise_image((300, 300)))["probabilities"]
+
+    def test_zero_blend_is_head_only_and_never_loads_text(self):
+        clf, emb = self.clf(0.0, self.centres[1])
+        np.testing.assert_allclose(self.probs(clf), self.head.probabilities(self.centres[1])[0], atol=1e-9)
+        self.assertEqual(emb.text_calls, 0)
+
+    def test_full_blend_is_zero_shot_and_can_predict_class_unseen_by_head(self):
+        clf, _ = self.clf(1.0, self.centres[4])  # looks like Knitted; the head never saw Knitted
+        self.assertEqual(clf.predict(noise_image((300, 300)))[0]["name"], "Knitted")
+
+    def test_half_blend_probabilities_valid_and_between_extremes_in_log_space(self):
+        v = self.centres[2]
+        p0, p1, ph = (self.probs(self.clf(w, v)[0]) for w in (0.0, 1.0, 0.5))
+        self.assertAlmostEqual(float(ph.sum()), 1.0, places=6)
+        mid = np.sqrt(p0 * p1)
+        np.testing.assert_allclose(ph, mid / mid.sum(), atol=1e-6)  # geometric mean = log-space average
+
+    def test_text_embeddings_computed_once(self):
+        clf, emb = self.clf(0.5, self.centres[0])
+        self.probs(clf)
+        self.probs(clf)
+        self.assertEqual(emb.text_calls, 1)
+
+    def test_blend_needs_text_encoder_and_valid_range(self):
+        with self.assertRaises(ValueError):
+            ch.EmbeddingClassifier(FakeEmbedder(), self.head, blend=0.5)  # no embed_texts
+        for bad in (-0.1, 1.5):
+            with self.assertRaises(ValueError):
+                ch.EmbeddingClassifier(TextEmbedder(self.centres, self.centres[0]), self.head, blend=bad)
+
+    def test_blend_default_is_head_plus_zero_shot(self):
+        self.assertEqual(ch.DEFAULT_BLEND, 0.5)
+
+    def test_env_override_for_blend(self):
+        self.assertEqual(ch.blend_from_env(None), ch.DEFAULT_BLEND)
+        self.assertEqual(ch.blend_from_env("0"), 0.0)
+        self.assertEqual(ch.blend_from_env("0.25"), 0.25)
+        with self.assertRaises(ValueError):
+            ch.blend_from_env("2")
+
+    def test_prompts_and_zero_shot_helpers_available_without_tools_package(self):
+        prompts = ch.build_prompts(NAMES, templates=["{} fabric"])
+        self.assertEqual(prompts["Cotton"], ["cotton fabric"])
+
+
 class TestModelChoice(unittest.TestCase):
     def test_auto_prefers_clip_head_when_file_exists(self):
         self.assertEqual(ch.choose_model_kind(None, head_exists=True), "clip_head")
