@@ -31,11 +31,9 @@ def find_free_port(preferred_port: int = 5050) -> int:
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", find_free_port(5050)))
     print("=" * 65)
-    print("  TEXCLASSIFIER AI — FABRIC MATERIAL VISION SYSTEM")
+    print("  FABRIC CLASSIFIER")
     print("=" * 65)
-    print(f"  • Platform: Apple Silicon / macOS")
-    print(f"  • Model: EfficientNet-B0 (14-Class Garment Fabric Classifier)")
-    print(f"  • Mode: Multi-Patch (7 interior texture crops)")
+        print(f"  • 14-class garment fabric classifier")
     print(f"  • Server URL: http://127.0.0.1:{port}")
     print("=" * 65)
 

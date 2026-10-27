@@ -1,5 +1,5 @@
 /**
- * TexClassifier.AI — Frontend Application Logic
+ * Fabric Classifier — Frontend Application Logic
  * Premium Textile Classification & Vision Platform
  */
 
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ─────────────────────────────────────── */
   let currentView     = 'landing';
   let currentFile     = null;
-  let currentSampleId = 'poly_cotton_check';
+  let currentSampleId = null;
   let latestResult    = null;
   let isClassifying   = false;
   let patchSlideIndex = 0;
@@ -33,8 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLaunch     = document.getElementById('btn-launch');
   const btnLogin      = document.getElementById('btn-login');
   const themeBtn      = document.getElementById('theme-btn');
-  const sysLabel      = document.getElementById('sys-label');
-
+  
   // Landing Page Elements
   const heroUpload    = document.getElementById('hero-upload');
   const heroFileInput = document.getElementById('hero-file-input');
@@ -56,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ingestionBadge  = document.getElementById('ingestion-badge');
   const imgFilename     = document.getElementById('img-filename');
   const imgMeta         = document.getElementById('img-meta');
+  const ingestionMeta   = document.getElementById('ingestion-meta');
   const qsPills         = document.querySelectorAll('.qs-pill');
   const btnClassify     = document.getElementById('btn-classify');
   const classifySpinner = document.getElementById('classify-spinner');
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabHome)      tabHome.addEventListener('click',      () => showView('landing'));
     if (tabDash)      tabDash.addEventListener('click',      () => showView('dashboard'));
     if (tabCatalog)   tabCatalog.addEventListener('click',   openCatalogModal);
-    if (tabContact)   tabContact.addEventListener('click',   () => showToast('TexClassifier.AI Platform v2.4 (Active)', 'success'));
+    if (tabContact)   tabContact.addEventListener('click',   () => showToast('Fabric Classifier', 'success'));
     if (navBrand)     navBrand.addEventListener('click',     () => showView('landing'));
     if (btnLaunch)    btnLaunch.addEventListener('click',    () => showView('dashboard'));
     if (btnLogin)     btnLogin.addEventListener('click',     () => showView('dashboard'));
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ─────────────────────────────────────── */
   const SAMPLE_PRESETS = {
     'poly_cotton_check': {
-      title: 'Linen fabric',
+      title: 'Check Weave Fabric',
       meta: 'Poly-cotton gingham check preset · 1000×1000',
       url: '/api/samples/poly_cotton_check.jpeg'
     },
@@ -371,19 +371,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Result cards stay empty until an image has been classified.
+  function setDashboardEmpty(isEmpty) {
+    if (viewDashboard) viewDashboard.classList.toggle('dash-empty', isEmpty);
+  }
+
+  function showIngestedImage(url, title, meta) {
+    if (previewImg) previewImg.src = url;
+    if (imgFilename) imgFilename.textContent = title;
+    if (imgMeta) imgMeta.textContent = meta;
+    if (ingestionMeta) ingestionMeta.classList.remove('hidden');
+    if (dropzone) dropzone.classList.add('has-image');
+    if (btnClassify) btnClassify.disabled = false;
+    setDashboardEmpty(true);
+    resetVisualizer();
+    if (visBadge) { visBadge.textContent = 'Idle'; visBadge.style.color = ''; }
+    if (visDesc) visDesc.textContent = 'Image received';
+  }
+
   function onFileSelected(file) {
     currentFile = file;
     currentSampleId = null;
     qsPills.forEach(p => p.classList.remove('active'));
 
-    const objUrl = URL.createObjectURL(file);
-    if (previewImg) previewImg.src = objUrl;
-    if (imgFilename) imgFilename.textContent = file.name;
-    if (imgMeta) {
-      const kb = (file.size / 1024).toFixed(1);
-      imgMeta.textContent = `Uploaded file · ${kb} KB · ${file.type || 'Image'}`;
-    }
+    const kb = (file.size / 1024).toFixed(1);
+    showIngestedImage(URL.createObjectURL(file), file.name, `Uploaded file · ${kb} KB · ${file.type || 'Image'}`);
     setIngestionState('ready');
+    executeClassification();
   }
 
   function selectSample(sampleId) {
@@ -395,12 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const info = SAMPLE_PRESETS[sampleId];
-    if (info) {
-      if (previewImg)  previewImg.src = info.url;
-      if (imgFilename) imgFilename.textContent = info.title;
-      if (imgMeta)     imgMeta.textContent = info.meta;
-    }
+    if (info) showIngestedImage(info.url, info.title, info.meta);
     setIngestionState('ready');
+    executeClassification();
   }
 
   function setIngestionState(state) {
@@ -414,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ingestionBadge.textContent = 'Processing';
     } else if (state === 'done') {
       ingestionBadge.classList.add('badge-done');
-      ingestionBadge.textContent = 'Uploaded';
+      ingestionBadge.textContent = 'Done';
     }
   }
 
@@ -440,14 +451,14 @@ document.addEventListener('DOMContentLoaded', () => {
       visBadge.textContent = 'Processing';
       visBadge.style.color = 'var(--cyan)';
     }
-    if (visDesc) visDesc.textContent = 'Extracting 7 garment interior patches...';
+    if (visDesc) visDesc.textContent = 'Preparing image...';
   }
 
   const PIPELINE_STAGES = [
-    { el: stepPatch,   dot: 'dot-patch',       pct: 20, desc: 'Extracting 7 interior fabric crops...', ms: 300 },
-    { el: stepPreproc, dot: 'dot-preprocess',  pct: 45, desc: 'Preprocessing 224×224 patch tensors...', ms: 250 },
-    { el: stepInfer,   dot: 'dot-inference',   pct: 85, desc: 'EfficientNet-B0 forward pass...',       ms: 700 },
-    { el: stepAgg,     dot: 'dot-aggregation', pct: 98, desc: 'Aggregating logits & softmax...',       ms: 200 }
+    { el: stepPatch,   dot: 'dot-patch',       pct: 20, desc: 'Preparing the image...', ms: 300 },
+    { el: stepPreproc, dot: 'dot-preprocess',  pct: 45, desc: 'Normalizing the image...', ms: 250 },
+    { el: stepInfer,   dot: 'dot-inference',   pct: 85, desc: 'Running the model...',                ms: 700 },
+    { el: stepAgg,     dot: 'dot-aggregation', pct: 98, desc: 'Scoring the fabric classes...',        ms: 200 }
   ];
 
   function runVisualizerAnimation() {
@@ -513,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (classifyLabel) classifyLabel.textContent = 'Analyzing Garment…';
     setIngestionState('processing');
 
+    setDashboardEmpty(true);
     resetVisualizer();
     runVisualizerAnimation();
 
@@ -526,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         response = await fetch('/api/predict', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sample_id: currentSampleId || 'poly_cotton_check' })
+          body: JSON.stringify({ sample_id: currentSampleId })
         });
       }
 
@@ -537,8 +549,9 @@ document.addEventListener('DOMContentLoaded', () => {
       await completeVisualizer();
 
       // Display results with sequential fade-up (Guideline 3)
-      triggerSequentialFade();
       renderClassificationResult(data);
+      setDashboardEmpty(false);
+      triggerSequentialFade();
 
       setIngestionState('done');
       showToast('Garment classified successfully!', 'success');
@@ -552,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isClassifying = false;
       if (btnClassify) btnClassify.disabled = false;
       if (classifySpinner) classifySpinner.classList.add('hidden');
-      if (classifyLabel) classifyLabel.textContent = 'Classify Fabric Material';
+      if (classifyLabel) classifyLabel.textContent = 'Classify Fabric';
     }
   }
 
@@ -608,13 +621,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const metrics = data.metrics || {};
     const imgInfo = data.image_info || {};
 
-    const patchTime = timing.patch_ms || metrics.patch_extraction_ms || 3.58;
-    const modelTime = timing.model_ms || metrics.model_inference_ms || 2.18;
+    const patchTime = timing.patch_ms || metrics.patch_extraction_ms || 0;
+    const modelTime = timing.model_ms || metrics.model_inference_ms || 0;
 
     if (dPatch)    dPatch.textContent    = `${patchTime.toFixed(2)}`;
     if (dPredStat) dPredStat.textContent = pctString;
     if (dModel)    dModel.textContent    = `${modelTime.toFixed(2)}`;
-    if (dRes)      dRes.textContent      = imgInfo.width ? `${imgInfo.width}×${imgInfo.height}` : '1000×1000';
+    if (dRes)      dRes.textContent      = imgInfo.width ? `${imgInfo.width}×${imgInfo.height}` : '—';
 
     // 6. JSON Drawer with Color Syntax Highlighting (Guideline 4)
     if (jsonPre) {
@@ -700,8 +713,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const idx = p.patch_index || i + 1;
       return `
         <div class="patch-item" data-index="${i}">
-          <img src="${src}" alt="Patch ${idx}" title="Interior fabric crop #${idx} (${p.width || 224}×${p.height || 224})">
-          <span class="patch-label">Patch ${idx}</span>
+          <img src="${src}" alt="Patch ${idx}" title="Analyzed region #${idx} (${p.width || 224}×${p.height || 224})">
+          <span class="patch-label">Region ${idx}</span>
         </div>`;
     }).join('');
 
@@ -844,10 +857,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const dev = sys.device || 'Apple Silicon (CPU)';
       const arch = sys.architecture || 'ARM64';
 
-      if (sysLabel)   sysLabel.textContent   = `EfficientNet-B0 · ${dev}`;
       if (dDevSub)    dDevSub.textContent    = `${dev} • ${arch}`;
     } catch {
-      if (sysLabel) sysLabel.textContent = 'Offline (Check Server)';
+      showToast('Cannot reach the server — check that it is running', 'error');
     }
   }
 
@@ -875,6 +887,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initTaxonomyModal();
   checkHealth();
 
-  // Preload initial sample result on first launch for instant wow-factor
-  selectSample('poly_cotton_check');
+  // The dashboard starts empty: nothing is shown until the user provides an image.
+  setDashboardEmpty(true);
 });

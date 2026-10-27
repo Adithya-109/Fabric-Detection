@@ -1,5 +1,5 @@
 /* ============================================================
-   TEXCLASSIFIER.AI — Premium Textile Vision Platform
+   FABRIC CLASSIFIER — Garment Material Identification
    Dark & Light Modes · Glassmorphism · Smooth Animations
    ============================================================ */
 
@@ -1892,3 +1892,50 @@ body.hero-upload-hovered .orb-3 {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+
+/* ─── Empty initial dashboard state ─── */
+.empty-note {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  color: var(--text-f);
+  min-height: 140px;
+  padding: 16px;
+}
+.empty-note svg { opacity: 0.35; }
+.empty-note p { font-size: 0.82rem; max-width: 220px; line-height: 1.45; margin: 0; }
+
+.dash-empty .empty-note { display: flex; flex: 1; }
+.dash-empty .pred-body,
+.dash-empty .pred-props,
+.dash-empty .contenders,
+.dash-empty .btn-show-dist,
+.dash-empty .full-dist,
+.dash-empty .diag-grid,
+.dash-empty .conf-badge,
+.dash-empty .slider-ctrl,
+.dash-empty .json-actions { display: none !important; }
+.dash-empty .json-pre { opacity: 0.5; }
+
+.dropzone-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text-f);
+  text-align: center;
+}
+.dropzone-empty strong { color: var(--text-m); font-size: 0.9rem; }
+.dropzone-empty span { font-size: 0.75rem; }
+.dropzone-empty svg { opacity: 0.45; }
+.dropzone:not(.has-image) .dropzone-preview img,
+.dropzone:not(.has-image) .preview-overlay { display: none; }
+.dropzone.has-image .dropzone-empty { display: none; }
+.badge-idle { background: transparent; color: var(--text-f); border: 1px solid var(--border); }
