@@ -1,0 +1,42 @@
+{
+ "sanity_check": {
+  "balanced_accuracy": 0.5700380553259786,
+  "macro_f1": 0.4146695079404005,
+  "top1": 0.4927536231884058,
+  "top3": 0.8612836438923396,
+  "cotton_vs_polyester_auc": 0.8085777777777777,
+  "per_class_recall": {
+   "Cotton": 0.25333333333333335,
+   "Polyester": 0.5,
+   "Silk": 0.8372093023255814,
+   "Denim": 0.7142857142857143,
+   "Linen": 0.6,
+   "Wool": 0.5925925925925926,
+   "Leather": 0.6,
+   "Velvet": 0.6,
+   "Corduroy": 0.0,
+   "Fleece": 0.6956521739130435,
+   "Nylon": 0.7317073170731707,
+   "Satin": 0.2857142857142857,
+   "Suede": 1.0
+  }
+ },
+ "train_counts": {
+  "Cotton": 1200,
+  "Polyester": 1200,
+  "Silk": 183,
+  "Denim": 25,
+  "Linen": 84,
+  "Wool": 158,
+  "Leather": 24,
+  "Velvet": 17,
+  "Corduroy": 7,
+  "Fleece": 109,
+  "Nylon": 174,
+  "Satin": 47,
+  "Knitted": 0,
+  "Suede": 9
+ },
+ "n_train": 3237,
+ "C": 0.01
+}
