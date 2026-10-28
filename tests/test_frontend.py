@@ -21,6 +21,11 @@ class TestBranding(unittest.TestCase):
         launcher = open(os.path.join(ROOT, "run_web.py"), encoding="utf-8").read()
         self.assertNotRegex(launcher, r"(?i)texclassifier")
 
+    def test_launcher_is_valid_python(self):
+        import ast
+        src = open(os.path.join(ROOT, "run_web.py"), encoding="utf-8").read()
+        ast.parse(src)  # regression: a mis-indented banner line once broke the launcher
+
 
 class TestNoOvals(unittest.TestCase):
     def test_removed_pill_elements(self):

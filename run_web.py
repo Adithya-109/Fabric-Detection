@@ -33,7 +33,7 @@ if __name__ == "__main__":
     print("=" * 65)
     print("  FABRIC CLASSIFIER")
     print("=" * 65)
-        print(f"  • 14-class garment fabric classifier")
+    print(f"  • 14-class garment fabric classifier")
     print(f"  • Server URL: http://127.0.0.1:{port}")
     print("=" * 65)
 
